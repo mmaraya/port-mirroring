@@ -1,0 +1,26 @@
+#!/bin/sh /etc/rc.common
+#
+# init script for port-mirroring (openwrt version)
+
+START=83
+APP=port-mirroring
+DAEMON=/usr/sbin/$APP
+PID_FILE=/var/run/$APP.pid
+
+# Don't run if not installed
+test -f $DAEMON || exit 0
+
+# Evaluate the config for the Debian scripts
+
+OPTIONS="--daemon --syslog"
+PIDFILE=/var/run/$APP.pid
+
+start() {
+        start-stop-daemon -S -x $APP -p $PID_FILE -m -b -- $OPTIONS
+}
+
+stop() {
+        start-stop-daemon -K -n $APP -p $PID_FILE -s TERM
+        rm -rf $PID_FILE
+}
+
