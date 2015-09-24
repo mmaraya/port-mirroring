@@ -10,3 +10,5 @@ config.log
 config.status
 port-mirroring
 port_mirroring-port-mirroring.o
+depcomp
+install-sh

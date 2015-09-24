@@ -16,7 +16,8 @@ http://code.google.com/p/port-mirroring/
 Build Instructions
 ------------------
 
-autoreconf -i
+aclocal
+automake --add-missing
 autoconf
 ./configure
 make
