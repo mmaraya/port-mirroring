@@ -13,3 +13,10 @@ The homepage for port-mirroring sources and bug/patch database is on:
 
 http://code.google.com/p/port-mirroring/
 
+Build Instructions
+------------------
+
+autoreconf -i
+autoconf
+./configure
+make

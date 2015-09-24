@@ -4,3 +4,9 @@ aclocal.m4
 configure
 missing
 compile
+autom4te.cache/
+.deps/
+config.log
+config.status
+port-mirroring
+port_mirroring-port-mirroring.o
