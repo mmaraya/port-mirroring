@@ -20,7 +20,7 @@ include $(TOPDIR)/rules.mk
 
 # Name and release number of this package
 PKG_NAME:=port-mirroring
-PKG_VERSION:=1.3
+PKG_VERSION:=1.4
 PKG_RELEASE:=1
 
 
@@ -28,7 +28,7 @@ PKG_RELEASE:=1
 # The root build directory, $(BUILD_DIR), is by default the build_mipsel
 # directory in your OpenWrt SDK directory
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://port-mirroring.googlecode.com/files/ 
+PKG_SOURCE_URL:=https://github.com/mmaraya/port-mirroring 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 
