@@ -19,7 +19,7 @@ Usage
 License
 -------
 
-Please see the file named LICENSE. 
+Please see the file named [LICENSE](https://github.com/mmaraya/port-mirroring/blob/master/LICENSE). 
 
 Issues
 ------
