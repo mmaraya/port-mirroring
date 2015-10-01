@@ -20,7 +20,7 @@ include $(TOPDIR)/rules.mk
 
 # Name and release number of this package
 PKG_NAME:=port-mirroring
-PKG_VERSION:=20150924
+PKG_VERSION:=1.4
 PKG_RELEASE:=$(PKG_SOURCE_VERSION)
 
 # This specifies the directory where we're going to build the program. 
