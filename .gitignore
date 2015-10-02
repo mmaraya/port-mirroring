@@ -3,6 +3,5 @@ aclocal.m4
 configure
 autom4te.cache/
 config.log
-config.status
 port-mirroring
 port_mirroring-port-mirroring.o
