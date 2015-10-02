@@ -21,16 +21,16 @@ include $(TOPDIR)/rules.mk
 # Name and release number of this package
 PKG_NAME:=port-mirroring
 PKG_VERSION:=1.4
-PKG_RELEASE:=$(PKG_SOURCE_VERSION)
+PKG_RELEASE:=4e53f1e9eb23e83a488a2fab0cd67b1a47db4d34
 
 # This specifies the directory where we're going to build the program. 
 # The root build directory, $(BUILD_DIR), is by default the build_mipsel
 # directory in your OpenWrt SDK directory
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.bz2
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_RELEASE).tar.bz2
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_URL:=git://github.com/mmaraya/port-mirroring.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=4e53f1e9eb23e83a488a2fab0cd67b1a47db4d34
+PKG_SOURCE_VERSION:=$(PKG_RELEASE)
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
