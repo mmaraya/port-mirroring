@@ -10,12 +10,48 @@ port-mirroring runs on all [hardware platforms supported by OpenWrt](http://wiki
 
 Download
 --------
-port-mirroring v1.4.0 has been tested against OpenWrt Designated Driver (Bleeding Edge, r47045) and is available for [ar71xx](https://github.com/mmaraya/port-mirroring/releases/download/v1.4.0/port-mirroring_1.4_ar71xx.ipk).
+port-mirroring v1.4.0 has been tested against OpenWrt Designated Driver (Bleeding Edge, r47045) and is available for the the following platform(s):
+* Atheros AR71xx/AR724x/913x or "ar71xx" platform: [port-mirroring_1.4_ar71xx.ipk] (https://github.com/mmaraya/port-mirroring/releases/download/v1.4.0/port-mirroring_1.4_ar71xx.ipk). 
+
+If you need binaries for your router architecture, please submit a [request](https://github.com/mmaraya/port-mirroring/issues). 
 
 
 Usage
 -----
+These instructions will only work on routers that use the Atheros AR71xx/AR724x/913x or "ar71xx" platform. You will need a different package if your router does not use the ar71xx platform.  If your does not use the ar71xx platform, please submit a [request](https://github.com/mmaraya/port-mirroring/issues).
 
+1. From your OpenWrt terminal, run the following command to install the precompiled package:
+```
+root@OpenWrt:~# opkg install https://github.com/mmaraya/port-mirroring/releases/download/v1.4.0/port-mirroring_1.4_ar71xx.ipk
+```
+2. Modify the `/etc/config/port-mirroring` file to suit your environment.  
+```
+config 'port-mirroring'
+	option 'target' '192.168.2.5'
+	option 'source_ports' 'eth1'
+	option 'filter' ''
+	option 'protocol' 'TEE'
+```
+   * Set the `target` option to the IP address to copy packets to
+   * Set the `source_ports` option to the network interface you want to copy packets from
+   * Set the `filter` option to [pcap-filter](http://www.tcpdump.org/manpages/pcap-filter.7.html) expressions
+   * Set the `protocol` to use either the `TEE` [iptables](http://ipset.netfilter.org/iptables-extensions.man.html)  or `TZSP` [TaZmen Sniffer Protocol](https://en.wikipedia.org/wiki/TZSP) formats
+3. Start port-mirroring as a process with debugging on:
+```
+root@OpenWrt:~# port-mirroring --debug
+```
+4. Start port-mirroring as a daemon:
+```
+root@OpenWrt:~# /etc/init.d/port_mirroring start
+```
+5. Stop port-mirroring daemon:
+```
+root@OpenWrt:~# /etc/init.d/port_mirroring stop
+```
+6. Remove the port-mirroring package
+```
+root@OpenWrt:~# opkg remove port-mirroring
+```
 
 License
 -------
@@ -39,3 +75,4 @@ Build Instructions
 autoreconf --install --force
 ./configure
 make
+```
