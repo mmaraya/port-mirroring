@@ -10,6 +10,7 @@ port-mirroring runs on all [hardware platforms supported by OpenWrt](http://wiki
 
 Download
 --------
+port-mirroring v1.4.0 has been tested against OpenWrt Designated Driver (Bleeding Edge, r47045) and is available for [ar71xx](https://github.com/mmaraya/port-mirroring/releases/download/v1.4.0/port-mirroring_1.4_ar71xx.ipk).
 
 
 Usage
