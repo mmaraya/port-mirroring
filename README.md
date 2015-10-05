@@ -36,19 +36,20 @@ config 'port-mirroring'
    * Set the `source_ports` option to the network interface you want to copy packets from
    * Set the `filter` option to [pcap-filter](http://www.tcpdump.org/manpages/pcap-filter.7.html) expressions
    * Set the `protocol` to use either the `TEE` [iptables](http://ipset.netfilter.org/iptables-extensions.man.html)  or `TZSP` [TaZmen Sniffer Protocol](https://en.wikipedia.org/wiki/TZSP) formats
-Start port-mirroring as a process with debugging on:
+
+To start port-mirroring as a foreground process with debugging on:
 ```
 root@OpenWrt:~# port-mirroring --debug
 ```
-Start port-mirroring as a daemon:
+To start port-mirroring as a daemon:
 ```
 root@OpenWrt:~# /etc/init.d/port_mirroring start
 ```
-Stop port-mirroring daemon:
+To stop the port-mirroring daemon:
 ```
 root@OpenWrt:~# /etc/init.d/port_mirroring stop
 ```
-Remove the port-mirroring package
+To uninstall the port-mirroring package
 ```
 root@OpenWrt:~# opkg remove port-mirroring
 ```
