@@ -131,26 +131,26 @@ typedef struct
 }ARPPACKET;
 
 //options:
-char opt_config[OPTION_MAX];
-char opt_pid[OPTION_MAX];
-int  opt_daemon      = 0;
-int  opt_syslog      = 0;
-int  opt_debug       = 0;
-int  opt_promiscuous = 0;
-int  opt_protocol    = 1;   //0 - TZSP, 1 - TEE
-int  debug_packets = 0;
-int                 mirroring_type = 0; /* 0 - to interface, 1 - to remote ip address */
-char                mirroring_target_if[OPTION_MAX];
-unsigned int        mirroring_target_ip;
-int                 mirroring_source_num = 0;
-char                mirroring_source[MAX_SOURCE_IF][OPTION_MAX];
-char                mirroring_filter[OPTION_MAX];
-pcap_t*             sendHandle = NULL; //send pcap handle
-int                 sendSocket = -1;   //send raw socket
-struct  sockaddr_in sendSocket_sa;
-char                senderMac[MACADDRLEN];
-char                remoteMac[MACADDRLEN];
-unsigned long       tLastInit = 0;
+char 			opt_config[OPTION_MAX];
+char 			opt_pid[OPTION_MAX];
+int  			opt_daemon      = 0;
+int  			opt_syslog      = 0;
+int  			opt_debug       = 0;
+int  			opt_promiscuous = 0;
+int  			opt_protocol    = 1;   //0 - TZSP, 1 - TEE
+int  			debug_packets = 0;
+int			mirroring_type = 0; /* 0 - to interface, 1 - to remote ip address */
+char			mirroring_target_if[OPTION_MAX];
+unsigned int		mirroring_target_ip;
+int			mirroring_source_num = 0;
+char			mirroring_source[MAX_SOURCE_IF][OPTION_MAX];
+char			mirroring_filter[OPTION_MAX];
+pcap_t*			sendHandle = NULL; //send pcap handle
+int			sendSocket = -1;   //send raw socket
+struct sockaddr_in	sendSocket_sa;
+char			senderMac[MACADDRLEN];
+char			remoteMac[MACADDRLEN];
+unsigned long		tLastInit = 0;
 
 #ifdef  _ENABLE_THREADS
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
