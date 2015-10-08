@@ -525,7 +525,6 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
     struct nlmsghdr* nlMsg;
     struct rtmsg*    rtMsg;
 
-    struct route_info* rtInfo;
     char               msgBuf[BUFSIZE];
 
     int sock, len, msgSeq = 0;
@@ -566,8 +565,7 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
 
     for (; NLMSG_OK(nlMsg, len); nlMsg = NLMSG_NEXT(nlMsg, len)) {
         struct rtmsg*  rtMsg = (struct rtmsg *)NLMSG_DATA(nlMsg);
-        struct rtattr* rtAttr;
-        unsigned int   rtLen, dstMask;
+        unsigned int   dstMask;
         char           ifName[IF_NAMESIZE] = {
             0
         };
@@ -1066,8 +1064,7 @@ void sig_handler(int signum)
 
 int main(int argc, char** argv)
 {
-    int i;
-    int c;
+    int c, i;
     int option_index = 0;
 
     static struct option long_options[] = {
