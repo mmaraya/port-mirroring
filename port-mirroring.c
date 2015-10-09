@@ -566,10 +566,8 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
     for (; NLMSG_OK(nlMsg, len); nlMsg = NLMSG_NEXT(nlMsg, len)) {
         struct rtmsg*  rtMsg = (struct rtmsg *)NLMSG_DATA(nlMsg);
         unsigned int   dstMask;
-        char           ifName[IF_NAMESIZE] = {
-            0
-        };
-        unsigned int   gateway, srcAddr, dstAddr;
+        char           ifName[IF_NAMESIZE] = {0};
+        unsigned int   dstAddr;
 
         if (rtMsg->rtm_family == AF_INET || rtMsg->rtm_table == RT_TABLE_MAIN)
         {
@@ -580,12 +578,6 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
                 {
                     case RTA_OIF:
                         if_indextoname(*(int *)RTA_DATA(rtAttr), ifName);
-                        break;
-                    case RTA_GATEWAY:
-                        gateway = *(u_int *)RTA_DATA(rtAttr);
-                        break;
-                    case RTA_PREFSRC:
-                        srcAddr = *(u_int *)RTA_DATA(rtAttr);
                         break;
                     case RTA_DST:
                         dstAddr = *(u_int *)RTA_DATA(rtAttr);
@@ -1064,7 +1056,7 @@ void sig_handler(int signum)
 
 int main(int argc, char** argv)
 {
-    int c, i;
+    int c;
     int option_index = 0;
 
     static struct option long_options[] = {
@@ -1080,7 +1072,6 @@ int main(int argc, char** argv)
 
     while ((c = getopt_long(argc, argv, "c:p:bds",
                             long_options, &option_index)) != -1) {
-        int this_option_optind = optind ? optind : 1;
         switch (c)
         {
             case 'c':
@@ -1161,6 +1152,7 @@ int main(int argc, char** argv)
         return -1;
     }
     #ifdef  _ENABLE_THREADS
+    int i;
     for (i = 0; i < mirroring_source_num; i++) {
         if (mirroring_type == 0 && strcmp(mirroring_target_if, mirroring_source[i]) == 0)
         {
