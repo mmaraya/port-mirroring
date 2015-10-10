@@ -6,12 +6,17 @@ AC_INIT([port-mirroring], [1.4], [mmaraya@users.noreply.github.com])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_PREFIX_DEFAULT()
 
-#libtool macros
-#AC_DISABLE_SHARED
-#AC_PROG_LIBTOOL
-
 # Checks for programs.
 AC_PROG_CC
+AC_CHECK_PROG([CPPCHECK], [cppcheck], [yes], [no])
+AM_CONDITIONAL([HAVE_CPPCHECK], [test "x$CPPCHECK" = xyes])
+#AC_MSG_CHECKING([for cppcheck])
+#if test -n "$CPPCHECK"; then
+#	AM_CONDITIONAL([HAVE_CPPCHECK])
+#	AC_MSG_RESULT([yes])	
+#else
+#	AC_MSG_RESULT([no])
+#fi
 
 # Checks for libraries.
 AC_CHECK_LIB([pcap],[pcap_open_live])

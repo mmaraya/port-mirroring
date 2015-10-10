@@ -185,6 +185,7 @@ CC = gcc
 CCDEPMODE = depmode=gcc3
 CFLAGS = -g -O2
 CPP = gcc -E
+CPPCHECK = yes
 CPPFLAGS = 
 CYGPATH_W = echo
 DEFS = -DPACKAGE_NAME=\"port-mirroring\" -DPACKAGE_TARNAME=\"port-mirroring\" -DPACKAGE_VERSION=\"1.4\" -DPACKAGE_STRING=\"port-mirroring\ 1.4\" -DPACKAGE_BUGREPORT=\"mmaraya@users.noreply.github.com\" -DPACKAGE_URL=\"\" -DPACKAGE=\"port-mirroring\" -DVERSION=\"1.4\" -DHAVE_LIBPCAP=1 -DHAVE_LIBPTHREAD=1 -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_ARPA_INET_H=1 -DHAVE_NETINET_IN_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_SYS_SOCKET_H=1 -DHAVE_SYSLOG_H=1 -DHAVE_UNISTD_H=1 -DHAVE_PCAP_H=1 -DHAVE_FORK=1 -DHAVE_VFORK=1 -DHAVE_WORKING_VFORK=1 -DHAVE_WORKING_FORK=1 -DHAVE_MEMSET=1 -DHAVE_SOCKET=1 -DHAVE_STRCHR=1 -DHAVE_STRSTR=1
@@ -738,6 +739,8 @@ uninstall-am: uninstall-sbinPROGRAMS
 install-data-local:
 	$(INSTALL_DATA) $(srcdir)/port-mirroring.conf $(sysconfdir)/port-mirroring
 	$(INSTALL_SCRIPT) $(srcdir)/port-mirroringd $(sysconfdir)/init.d/port-mirroring
+cppcheck:
+	cppcheck --quiet --enable=all $(srcdir)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
