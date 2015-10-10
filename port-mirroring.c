@@ -239,13 +239,12 @@ char * getUCIItem(char* buf, char* item)
 {
     char* p1 = buf;
     char* p2;
-    char  delim;
     while (*p1 == '\t' || *p1 == ' ') {
         p1++;
     }
     if (*p1 == '\'' || *p1 == '"')
     {
-        delim = *p1++;
+        char delim = *p1++;
         p2    = strchr(p1, delim);
     }
     else
@@ -425,9 +424,11 @@ char * printMACStr(const char* mac)
 int readNlSock(int sockFd, char* bufPtr, int seqNum, int pId)
 {
     struct nlmsghdr* nlHdr;
-    int              readLen = 0, msgLen = 0;
+    int              msgLen = 0;
 
     do {
+	int readLen = 0;
+
         /* Recieve response from the kernel */
         if ((readLen = recv(sockFd, bufPtr, BUFSIZE - msgLen, 0)) < 0)
         {
@@ -566,13 +567,13 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
     for (; NLMSG_OK(nlMsg, len); nlMsg = NLMSG_NEXT(nlMsg, len)) {
         struct rtmsg*  rtMsg = (struct rtmsg *)NLMSG_DATA(nlMsg);
         unsigned int   dstMask;
-        char           ifName[IF_NAMESIZE] = {0};
-        unsigned int   dstAddr;
 
         if (rtMsg->rtm_family == AF_INET || rtMsg->rtm_table == RT_TABLE_MAIN)
         {
             struct rtattr* rtAttr = (struct rtattr *)RTM_RTA(rtMsg);
             int            rtLen  = RTM_PAYLOAD(nlMsg);
+            char           ifName[IF_NAMESIZE] = {0};
+            unsigned int   dstAddr;
             for (; RTA_OK(rtAttr, rtLen); rtAttr = RTA_NEXT(rtAttr, rtLen)) {
                 switch (rtAttr->rta_type)
                 {
@@ -611,19 +612,14 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
 int getRemoteARP(unsigned int targetIP, const char* device, char* mac)
 {
     unsigned int        localIP;
-    char                errbuf[PCAP_ERRBUF_SIZE] = {
-        0
-    };
+    char                errbuf[PCAP_ERRBUF_SIZE] = {0};
     ARPPACKET           arp;
     struct bpf_program  fp;
     struct pcap_pkthdr* header;
     const u_char*       pkt_data;
     int                 sent        = 0;
     int                 found       = 1;
-    int                 res         = 0;
-    char                filter[100] = {
-        0
-    };
+    char                filter[100] = {0};
     struct in_addr      addr;
     pcap_t*             pHandle = pcap_open_live(device, 65536, 0, 500, errbuf);
 
@@ -661,7 +657,7 @@ int getRemoteARP(unsigned int targetIP, const char* device, char* mac)
     pcap_sendpacket(pHandle, (unsigned char *)&arp, sizeof(arp));
 
     while (1) {
-        res = pcap_next_ex(pHandle, &header, &pkt_data);
+        int res = pcap_next_ex(pHandle, &header, &pkt_data);
         if (res > 0)
         {
             if (*(unsigned short *)(pkt_data + 12) == htons(0x0806) &&
