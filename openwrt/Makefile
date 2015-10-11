@@ -21,7 +21,7 @@ include $(TOPDIR)/rules.mk
 # Name and release number of this package
 PKG_NAME:=port-mirroring
 PKG_VERSION:=1.4
-PKG_RELEASE:=4e53f1e9eb23e83a488a2fab0cd67b1a47db4d34
+PKG_RELEASE:=45d2f59bf87b6f5603a41d16db656e996b32fe1b
 
 # This specifies the directory where we're going to build the program. 
 # The root build directory, $(BUILD_DIR), is by default the build_mipsel
@@ -32,6 +32,7 @@ PKG_SOURCE_URL:=git://github.com/mmaraya/port-mirroring.git
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_RELEASE)
 
+PKG_FIXUP:=autoreconf
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
