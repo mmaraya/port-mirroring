@@ -21,7 +21,7 @@ include $(TOPDIR)/rules.mk
 # Name and release number of this package
 PKG_NAME:=port-mirroring
 PKG_VERSION:=1.4
-PKG_RELEASE:=45d2f59bf87b6f5603a41d16db656e996b32fe1b
+PKG_RELEASE:=8655ef52d5c83a5b413b5ac76bd46d76d8ff2b93
 
 # This specifies the directory where we're going to build the program. 
 # The root build directory, $(BUILD_DIR), is by default the build_mipsel
