@@ -296,12 +296,8 @@ int loadCfg(const char* fpath)
     }
     memset(sline, 0, sizeof(sline));
     while (fgets(sline, sizeof(sline), fp) != NULL) {
-        char option[OPTION_MAX] = {
-            0
-        };
-        char value[OPTION_MAX]  = {
-            0
-        };
+        char option[OPTION_MAX] = {0};
+        char value[OPTION_MAX]  = {0};
         if (sline[0] == '#' || sline[0] == '\0')
         {
             continue;
@@ -384,9 +380,7 @@ void init()
 
 int reopenSendHandle(const char* device)
 {
-    char errbuf[PCAP_ERRBUF_SIZE] = {
-        0
-    };
+    char errbuf[PCAP_ERRBUF_SIZE] = {0};
     if (sendHandle != NULL)
     {
         if (opt_debug)
@@ -412,9 +406,7 @@ int reopenSendHandle(const char* device)
 
 char * printMACStr(const char* mac)
 {
-    static char macStr[20]={
-        0
-    };
+    static char macStr[20]={0};
     sprintf(macStr, "%02x%02x%02x%02x%02x%02x",
             (unsigned char)mac[0], (unsigned char)mac[1], (unsigned char)mac[2],
             (unsigned char)mac[3], (unsigned char)mac[4], (unsigned char)mac[5]);
