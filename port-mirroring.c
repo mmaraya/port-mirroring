@@ -175,27 +175,6 @@ char * getCurrentTime()
 
 void writeLog(MYLOG_LEVEL ll, const char* message, ...)
 {
-#ifdef _WIN32
-    FILE* fp;
-    fp = fopen(".\\port-mirroring.log", "a");
-    if (fp != NULL)
-    {
-        if (ll == MYLOG_INFO)
-        {
-            fprintf(fp, "%s[info] ", getCurrentTime());
-        }
-        else if (ll == MYLOG_ERROR)
-        {
-            fprintf(fp, "%s[error] ", getCurrentTime());
-        }
-        va_list arg_ptr;
-        va_start(arg_ptr, message);
-        vfprintf(fp, message, arg_ptr);
-        fflush(fp);
-        fclose(fp);
-        va_end(arg_ptr);
-    }
-#else
     va_list arg_ptr;
     va_start(arg_ptr, message);
     if (ll == MYLOG_INFO)
@@ -223,7 +202,6 @@ void writeLog(MYLOG_LEVEL ll, const char* message, ...)
         }
     }
     va_end(arg_ptr);
-#endif
 }
 
 void addMonitoringSource(const char* s)
@@ -1113,15 +1091,8 @@ int main(int argc, char** argv)
         {
             if (loadCfg("/etc/port-mirroring") == -1)
             {
-                #ifdef _WIN32
-                if (loadCfg("./port-mirroring") == -1)
-                {
-                #endif
                 writeLog(MYLOG_ERROR, "port-mirroring::main, can not find configure file.\n");
                 return -1;
-                #ifdef _WIN32
-            }
-                #endif
             }
         }
     }
