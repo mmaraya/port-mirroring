@@ -58,11 +58,12 @@ Build Prerequisites
 -------------------
 
 To compile the OpenWrt package, you will need the following:
-    * OpenWrt SDK
-    * autoconf
-    * ccache
-    * cppcheck (optional)
-    * libpcap
+
+   * OpenWrt SDK
+   * autoconf
+   * ccache
+   * cppcheck (optional)
+   * libpcap
 
 License
 -------
