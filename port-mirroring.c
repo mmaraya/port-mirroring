@@ -997,7 +997,10 @@ int fork_daemon()
     }
 
     /* Change the current working directory */
-    chdir("/");
+    if ((chdir("/")) < 0) {
+        /* Log the failure */
+        exit(EXIT_FAILURE);
+    }
 
     /* Close out the standard file descriptors */
     close(STDIN_FILENO);
