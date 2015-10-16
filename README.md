@@ -54,6 +54,16 @@ To uninstall the port-mirroring package
 root@OpenWrt:~# opkg remove port-mirroring
 ```
 
+Build Prerequisites
+-------------------
+
+To compile the OpenWrt package, you will need the following:
+    * OpenWrt SDK
+    * autoconf
+    * ccache
+    * cppcheck (optional)
+    * libpcap
+
 License
 -------
 
