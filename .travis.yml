@@ -4,7 +4,7 @@ before-install:
 after-success: 
   - wget https://downloads.openwrt.org/snapshots/trunk/ar71xx/generic/OpenWrt-SDK-ar71xx-generic_gcc-4.8-linaro_musl-1.1.11.Linux-x86_64.tar.bz2
   - mkdir openwrt-sdk
-  - tar xvfj *bz2 -C openwrt-sdk
+  - tar xvfj *bz2 -C openwrt-sdk/
   - mkdir openwrt-sdk/package/port-mirroring 
   - cp openwrt/Makefile openwrt-sdk/package/port-mirroring 
   - cd openwrt-sdk
