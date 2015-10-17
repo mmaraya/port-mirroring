@@ -18,7 +18,7 @@ If you need binaries for your router architecture, please submit a [request](htt
 
 Usage
 -----
-These instructions will only work on routers that use the Atheros AR71xx/AR724x/913x or "ar71xx" platform. You will need a different package if your router does not use the ar71xx platform.  If your does not use the ar71xx platform, please submit a [request](https://github.com/mmaraya/port-mirroring/issues).
+These instructions will only work on routers that use the Atheros AR71xx/AR724x/913x or "ar71xx" platform. If your router does not use the ar71xx platform, please submit a [request](https://github.com/mmaraya/port-mirroring/issues).
 
 From your OpenWrt terminal, run the following command to install the precompiled package:
 ```
@@ -59,11 +59,11 @@ Build Prerequisites
 
 To compile the OpenWrt package, you will need the following:
 
-   * OpenWrt SDK
+   * [OpenWrt SDK](http://wiki.openwrt.org/doc/howto/obtain.firmware.sdk)
    * autoconf
    * ccache
+   * libpcap-dev
    * cppcheck (optional)
-   * libpcap
 
 License
 -------
