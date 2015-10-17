@@ -7,9 +7,11 @@ addons:
       - libpcap-dev
 
 install:
-  - cd $HOME 
+  - pwd 
   - curl -o sdk.bz2 https://downloads.openwrt.org/snapshots/trunk/ar71xx/generic/OpenWrt-SDK-ar71xx-generic_gcc-4.8-linaro_musl-1.1.11.Linux-x86_64.tar.bz2
   - tar xfj sdk.bz2 
+  - pwd 
+  - ls -lR 
   - mkdir sdk/package/port-mirroring/ 
   - cp openwrt/Makefile sdk/package/port-mirroring/ 
 
