@@ -1,15 +1,15 @@
 language: c
 compiler: gcc
-sudo: required
+sudo: false
 addons: 
   apt: 
     packages: 
       - libpcap-dev
 
 install:
-  - pwd 
-  - wget https://downloads.openwrt.org/snapshots/trunk/ar71xx/generic/ OpenWrt-SDK-ar71xx-generic_gcc-4.8-linaro_musl-1.1.11.Linux-x86_64.tar.bz2
+  - wget https://downloads.openwrt.org/snapshots/trunk/ar71xx/generic/OpenWrt-SDK-ar71xx-generic_gcc-4.8-linaro_musl-1.1.11.Linux-x86_64.tar.bz2
   - tar xfj *.bz2 
+  - pwd && ls -l && ls -l OpenWrt*
   - mkdir OpenWrt-SDK-ar71xx-generic_gcc-4.8-linaro_musl-1.1.11.Linux-x86_64/package/port-mirroring/ 
   - cp openwrt/Makefile OpenWrt-SDK-ar71xx-generic_gcc-4.8-linaro_musl-1.1.11.Linux-x86_64/package/port-mirroring/ 
 
