@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.68])
 AC_INIT([port-mirroring], [1.4], [mmaraya@users.noreply.github.com])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_PREFIX_DEFAULT()
