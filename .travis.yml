@@ -5,6 +5,14 @@ addons:
   apt: 
     packages: 
       - libpcap-dev
+  coverity_scan:
+    project:
+      name: "mmaraya/port-mirroring"
+      description: "<Your project description here>"
+    notification_email: mike.maraya@gmail.com
+    build_command_prepend: "port-mirroring sends copies of network packets from one network interface to another device on the network."
+    build_command: "autoreconf -vfi && ./configure && make"
+    branch_pattern: coverity_scan
 
 install:
   - wget https://downloads.openwrt.org/snapshots/trunk/ar71xx/generic/OpenWrt-SDK-ar71xx-generic_gcc-4.8-linaro_musl-1.1.11.Linux-x86_64.tar.bz2
@@ -21,13 +29,3 @@ env:
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
    #   via the "travis encrypt" command using the project repo's public key
    - secure: "G3yk9zmPxvlEIlufHEHho16d6ls7RVKuKEBpB6zwKjgC86ruc/hCLn44sTXrWc80uM0sy3KRR7t1nxcmtz/EocqXDpUc7PlhO8mK8cS8t0OCfQLXbk0lRILZoWNHYBsq/j7mdyxz2i/AEuGJ4igwYPpP2zTdNJGpG/KZ6BIFxdAkUOXqE/PRiA4wlB9/aVxm32+qLsMMKpV4bGL+bjLDmSBDxkAf10wuHG8xeuUAyc5F4H1W1LUjUoD2qq1AwT3dMGAZqBsAo7j+a54ynJglhvj9O2y7TiKkBPlZ9jNZriuCv9BI9MZxnkGHsP8Sw3Z6smFbxsDoNvPBcObyWyz8MgXnX2JECXP9nZ4DJs2VYdF0Ght/YYPAfykQEpWDLnc7fr1uvkLmsNqgDluyVer/48IPVHM4HiG4UBcTuhc+4uMj0RBOajvg5+QnsLRjEfKNu3jDdjq67IcmfxIOyHwIwny6flokTMNasq1bqQkznxmt+qsDjCkTgLCBo/NRJXN0JkCzfG54bc4uTMlhi1DQv6uFvqQHvFZwM+pFxZVePGT2CCTXpyt5jBt/uedrFhTwIp491uqwe5kJsdxLEKyUoRkjyxmO5u+hwGFfaaxvyoOEkU3dl/nmRgLUnFNLQAysJUHRUiDSu2mCIIqjkZ0UGaeh+S+7gekLu/8A2gOoOhI="
-
-addons:
-  coverity_scan:
-    project:
-      name: "mmaraya/port-mirroring"
-      description: "<Your project description here>"
-    notification_email: mike.maraya@gmail.com
-    build_command_prepend: "port-mirroring sends copies of network packets from one network interface to another device on the network."
-    build_command: "autoreconf -vfi && ./configure && make"
-    branch_pattern: coverity_scan
