@@ -8,9 +8,9 @@ addons:
   coverity_scan:
     project:
       name: "mmaraya/port-mirroring"
-      description: "<Your project description here>"
+      description: "port-mirroring sends copies of network packets from one network interface to another device on the network."
     notification_email: mike.maraya@gmail.com
-    build_command_prepend: "port-mirroring sends copies of network packets from one network interface to another device on the network."
+    build_command_prepend: ""
     build_command: "autoreconf -vfi && ./configure && make"
     branch_pattern: coverity_scan
 
