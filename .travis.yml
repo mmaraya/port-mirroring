@@ -15,14 +15,14 @@ addons:
     branch_pattern: coverity_scan
 
 install:
-  - wget https://downloads.openwrt.org/snapshots/trunk/ar71xx/generic/OpenWrt-SDK-ar71xx-generic_gcc-4.8-linaro_musl-1.1.11.Linux-x86_64.tar.bz2
+  - wget https://downloads.openwrt.org/chaos_calmer/15.05/ar71xx/generic/OpenWrt-SDK-15.05-ar71xx-generic_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64.tar.bz2 
   - tar xfj *.bz2 
-  - mkdir OpenWrt-SDK-ar71xx-generic_gcc-4.8-linaro_musl-1.1.11.Linux-x86_64/package/port-mirroring/ 
-  - cp openwrt/Makefile OpenWrt-SDK-ar71xx-generic_gcc-4.8-linaro_musl-1.1.11.Linux-x86_64/package/port-mirroring/ 
+  - mkdir OpenWrt-SDK-15.05-ar71xx-generic_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/package/port-mirroring/ 
+  - cp openwrt/Makefile OpenWrt-SDK-15.05-ar71xx-generic_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/package/port-mirroring/ 
 
 script: 
   - autoreconf -vfi && ./configure && make 
-  - cd OpenWrt-SDK-ar71xx-generic_gcc-4.8-linaro_musl-1.1.11.Linux-x86_64 && make package/port-mirroring/compile 
+  - cd OpenWrt-SDK-15.05-ar71xx-generic_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64 && make package/port-mirroring/compile 
 
 env:
   global:
