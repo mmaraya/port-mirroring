@@ -1049,7 +1049,8 @@ int main(int argc, char** argv)
             case 'c':
                 if (optarg)
                 {
-                    strncpy(opt_config, optarg, sizeof(opt_config));
+                    strncpy(opt_config, optarg, OPTION_MAX);
+                    opt_config[OPTION_MAX - 1] = '\0';
                 }
                 break;
             case 'p':
