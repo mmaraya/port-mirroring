@@ -10,8 +10,8 @@ port-mirroring runs on all [hardware platforms supported by OpenWrt](http://wiki
 
 Download
 --------
-port-mirroring v1.4.0 has been tested against OpenWrt Designated Driver (Bleeding Edge, r47045) and is available for the the following platform(s):
-* Atheros AR71xx/AR724x/913x or "ar71xx" platform: [port-mirroring_1.4_ar71xx.ipk] (https://github.com/mmaraya/port-mirroring/releases/download/v1.4.0/port-mirroring_1.4_ar71xx.ipk). 
+port-mirroring v1.4.1 has been tested against OpenWrt Chaos Calmer 15.05 and is available for the the following platform(s):
+* Atheros AR71xx/AR724x/913x or "ar71xx" platform: [port-mirroring_1.4.1_ar71xx.ipk] (https://github.com/mmaraya/port-mirroring/releases/download/v1.4.1/port-mirroring_1.4.1_ar71xx.ipk). 
 
 If you need binaries for your router architecture, please submit a [request](https://github.com/mmaraya/port-mirroring/issues). 
 
@@ -32,7 +32,7 @@ config 'port-mirroring'
 	option 'filter' ''
 	option 'protocol' 'TEE'
 ```
-   * Set the `target` option to the IP address to copy packets to
+   * Set the `target` option to the IP address or network interface to copy packets to
    * Set the `source_ports` option to the network interface you want to copy packets from
    * Set the `filter` option to [pcap-filter](http://www.tcpdump.org/manpages/pcap-filter.7.html) expressions
    * Set the `protocol` to use either the `TEE` [iptables](http://ipset.netfilter.org/iptables-extensions.man.html)  or `TZSP` [TaZmen Sniffer Protocol](https://en.wikipedia.org/wiki/TZSP) formats
