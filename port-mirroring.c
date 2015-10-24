@@ -209,6 +209,7 @@ void addMonitoringSource(const char* s)
     if (mirroring_source_num < MAX_SOURCE_IF)
     {
         strncpy(mirroring_source[mirroring_source_num], s, OPTION_MAX);
+        mirroring_source[mirroring_source_num][OPTION_MAX - 1] = '\0'; 
         mirroring_source_num++;
     }
 }
