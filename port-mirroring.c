@@ -1055,7 +1055,8 @@ int main(int argc, char** argv)
             case 'p':
                 if (optarg)
                 {
-                    strncpy(opt_pid, optarg, sizeof(opt_pid));
+                    strncpy(opt_pid, optarg, OPTION_MAX);
+                    opt_pid[OPTION_MAX - 1] = '\0';
                 }
                 break;
             case 'b':
