@@ -476,7 +476,8 @@ int getInterfaceIP(const char* device, unsigned int* ip)
     }
     memset(&buffer, 0x00, sizeof(buffer));
     buffer.ifr_addr.sa_family = AF_INET;
-    strncpy(buffer.ifr_name, device, sizeof(buffer.ifr_name));
+    strncpy(buffer.ifr_name, device, IFNAMSIZ);
+    buffer.ifr_name[IFNAMSIZ - 1] = '\0';
 
     if (ioctl(s, SIOCGIFADDR, &buffer) < 0)
     {
