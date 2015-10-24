@@ -22,7 +22,7 @@ These instructions will only work on routers that use the Atheros AR71xx/AR724x/
 
 From your OpenWrt terminal, run the following command to install the precompiled package:
 ```
-root@OpenWrt:~# opkg install https://github.com/mmaraya/port-mirroring/releases/download/v1.4.0/port-mirroring_1.4_ar71xx.ipk
+root@OpenWrt:~# opkg install https://github.com/mmaraya/port-mirroring/releases/download/v1.4.1/port-mirroring_1.4.1_ar71xx.ipk
 ```
 Modify the `/etc/config/port-mirroring` file to suit your environment.  
 ```
