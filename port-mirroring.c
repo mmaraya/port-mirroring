@@ -691,13 +691,18 @@ int initSendHandle()
         {
             /* TZSP format */
             int sendBufSize = 65536;
+            int retval;
             sendSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
             if (sendSocket == -1)
             {
                 writeLog(MYLOG_ERROR, "port-mirroring::initSendHandle, couldn't create socket.\n");
                 return -1;
             }
-            setsockopt(sendSocket, SOL_SOCKET, SO_SNDBUF, (char *)&sendBufSize, sizeof(sendBufSize));
+            retval = setsockopt(sendSocket, SOL_SOCKET, SO_SNDBUF, (char *)&sendBufSize, sizeof(sendBufSize));
+            if (retval < 0) {
+                writeLog(MYLOG_ERROR, "port-mirroring::initSendHandle, couldn't set socket options.\n");
+                return -1;
+            }
             sendSocket_sa.sin_family      = AF_INET;
             sendSocket_sa.sin_port        = htons(TZSP_PORT);
             sendSocket_sa.sin_addr.s_addr = mirroring_target_ip;
