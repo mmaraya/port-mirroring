@@ -381,6 +381,7 @@ int reopenSendHandle(const char* device)
             writeLog(MYLOG_INFO, "port-mirroring::reopenSendHandle %s success.\n", device);
         }
     }
+    return 0;
 }
 
 char * printMACStr(const char* mac)
