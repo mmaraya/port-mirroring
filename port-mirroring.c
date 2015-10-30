@@ -914,7 +914,7 @@ start_handle:
     if (handle == NULL)
     {
         writeLog(MYLOG_ERROR, "port-mirroring::start_mirroring, couldn't open device \"%s\": %s\n", (const char *)dev, errbuf);
-        return;
+        return NULL;
     }
 
     if (mirroring_filter[0] != '\0')
@@ -923,13 +923,13 @@ start_handle:
         {
             writeLog(MYLOG_ERROR, "port-mirroring::start_mirroring, couldn't parse filter \"%s\": %s\n", mirroring_filter, pcap_geterr(handle));
             pcap_close(handle);
-            return;
+            return NULL;
         }
         if (pcap_setfilter(handle, &fp) == -1)
         {
             writeLog(MYLOG_ERROR, "port-mirroring::start_mirroring, couldn't install filter \"%s\": %s\n", mirroring_filter, pcap_geterr(handle));
             pcap_close(handle);
-            return;
+            return NULL;
         }
     }
     //start the capture
@@ -956,7 +956,7 @@ start_handle:
         writeLog(MYLOG_ERROR, "port-mirroring::start_mirroring, reopen device \"%s\".\n", (const char *)dev);
         goto start_handle;
     }
-    return;
+    return NULL;
 }
 
 void write_pid()
