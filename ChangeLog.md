@@ -2,12 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.4.2] - 2015-10-30
 ### Fixed
-- Corrected security weaknesses (#15, #16, #17, #18, #19, #20, #21, #22)
+- Corrected remaining security weaknesses (#20, #21, #22)
 
 ### Changed
-- Enabled all compiler warning 
+- Enabled all compiler warnings 
 
 ### Added
 - Added files to make autoconf and automake happy (#29)
@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Eliminated as many automake and autoconf generated files as possible (#10)
 - Removed preprocessor directives checking for Windows (#11)
+- Corrected security weaknesses (#15, #16, #17, #18, #19))
 
 ### Added
 - travis-ci continuous integration (#12)
