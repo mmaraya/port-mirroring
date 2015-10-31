@@ -20,9 +20,21 @@ Usage
 -----
 These instructions will only work on routers that use the Atheros AR71xx/AR724x/913x or "ar71xx" platform. If your router does not use the ar71xx platform, please submit a [request](https://github.com/mmaraya/port-mirroring/issues).
 
-From your OpenWrt terminal, run the following command to install the precompiled package:
+The default wget in OpenWrt is provided by Busybox and does not support SSL. The following commands from the OpenWrt terminal will install the full wget with SSL support and root certificates:
 ```
-root@OpenWrt:~# opkg install https://github.com/mmaraya/port-mirroring/releases/download/v1.4.2/port-mirroring_1.4.2_ar71xx.ipk
+root@OpenWrt:~# opkg update
+root@OpenWrt:~# opkg install wget
+root@OpenWrt:~# mkdir -p /etc/ssl/certs
+root@OpenWrt:~# echo "export SSL_CERT_DIR=/etc/ssl/certs" >> /etc/profile
+root@OpenWrt:~# source /etc/profile
+root@OpenWrt:~# opkg install ca-certificates
+```
+
+From your OpenWrt terminal, run the following commands to install the precompiled package.
+```
+root@OpenWrt:~# cd /tmp
+root@OpenWrt:~# wget https://github.com/mmaraya/port-mirroring/releases/download/v1.4.2/port-mirroring_1.4.2_ar71xx.ipk
+root@OpenWrt:~# opkg install port-mirroring_1.4.2_ar71xx.ipk
 ```
 Modify the `/etc/config/port-mirroring` file to suit your environment.  
 ```
