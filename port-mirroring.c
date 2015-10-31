@@ -541,14 +541,13 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
 
     for (; NLMSG_OK(nlMsg, len); nlMsg = NLMSG_NEXT(nlMsg, len)) {
         struct rtmsg*  rtMsg = (struct rtmsg *)NLMSG_DATA(nlMsg);
-        unsigned int   dstMask;
 
         if (rtMsg->rtm_family == AF_INET || rtMsg->rtm_table == RT_TABLE_MAIN)
         {
             struct rtattr* rtAttr = (struct rtattr *)RTM_RTA(rtMsg);
             int            rtLen  = RTM_PAYLOAD(nlMsg);
             char           ifName[IF_NAMESIZE] = {0};
-            unsigned int   dstAddr = 0;
+            unsigned int   dstAddr = 0, dstMask = 0;
             for (; RTA_OK(rtAttr, rtLen); rtAttr = RTA_NEXT(rtAttr, rtLen)) {
                 switch (rtAttr->rta_type)
                 {
