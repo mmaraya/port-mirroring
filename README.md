@@ -10,8 +10,8 @@ port-mirroring runs on all [hardware platforms supported by OpenWrt](http://wiki
 
 Download
 --------
-port-mirroring v1.4.1 has been tested against OpenWrt Chaos Calmer 15.05 and is available for the the following platform(s):
-* Atheros AR71xx/AR724x/913x or "ar71xx" platform: [port-mirroring_1.4.1_ar71xx.ipk] (https://github.com/mmaraya/port-mirroring/releases/download/v1.4.1/port-mirroring_1.4.1_ar71xx.ipk). 
+port-mirroring v1.4.2 has been tested against OpenWrt Chaos Calmer 15.05 and is available for the the following platform(s):
+* Atheros AR71xx/AR724x/913x or "ar71xx" platform: [port-mirroring_1.4.2_ar71xx.ipk] (https://github.com/mmaraya/port-mirroring/releases/download/v1.4.2/port-mirroring_1.4.2_ar71xx.ipk). 
 
 If you need binaries for your router architecture, please submit a [request](https://github.com/mmaraya/port-mirroring/issues). 
 
@@ -22,7 +22,7 @@ These instructions will only work on routers that use the Atheros AR71xx/AR724x/
 
 From your OpenWrt terminal, run the following command to install the precompiled package:
 ```
-root@OpenWrt:~# opkg install https://github.com/mmaraya/port-mirroring/releases/download/v1.4.1/port-mirroring_1.4.1_ar71xx.ipk
+root@OpenWrt:~# opkg install https://github.com/mmaraya/port-mirroring/releases/download/v1.4.2/port-mirroring_1.4.2_ar71xx.ipk
 ```
 Modify the `/etc/config/port-mirroring` file to suit your environment.  
 ```
