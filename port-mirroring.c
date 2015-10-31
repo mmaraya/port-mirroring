@@ -535,6 +535,7 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
     if ((len = readNlSock(sock, msgBuf, msgSeq, getpid())) < 0)
     {
         writeLog(MYLOG_ERROR, "getSenderInterface, readNlSock failed.");
+        close(sock); 
         return -1;
     }
 
