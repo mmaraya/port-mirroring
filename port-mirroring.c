@@ -547,7 +547,7 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
             struct rtattr* rtAttr = (struct rtattr *)RTM_RTA(rtMsg);
             int            rtLen  = RTM_PAYLOAD(nlMsg);
             char           ifName[IF_NAMESIZE] = {0};
-            unsigned int   dstAddr = 0, dstMask = 0;
+            unsigned int   dstAddr = 0, dstMask = 1;
             for (; RTA_OK(rtAttr, rtLen); rtAttr = RTA_NEXT(rtAttr, rtLen)) {
                 switch (rtAttr->rta_type)
                 {
