@@ -26,6 +26,8 @@
  *
  */
 
+#include <stdint.h>
+
 #define ETH_ALEN    	6       /* Octets in one ethernet addr		*/
 #define ETH_P_ARP   	0x0806  /* Address Resolution packet		*/
 #define ETH_P_802_3 	0x0001  /* Dummy type for 802.3 frames 		*/
@@ -66,7 +68,7 @@ int reopenSendHandle(const char* device);
 
 char * printMACStr(const char* mac);
 
-int readNlSock(int sockFd, char* bufPtr, int seqNum, int pId);
+int readNlSock(int sockFd, char* bufPtr, uint32_t seqNum, int pId);
 
 int getInterfaceMac(const char* device, char* mac);
 

@@ -373,7 +373,7 @@ char * printMACStr(const char* mac)
     return macStr;
 }
 
-int readNlSock(int sockFd, char* bufPtr, int seqNum, int pId)
+int readNlSock(int sockFd, char* bufPtr, uint32_t seqNum, int pId)
 {
     struct nlmsghdr* nlHdr;
     int              msgLen = 0;
@@ -482,7 +482,8 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
 
     char               msgBuf[BUFSIZE];
 
-    int sock, len, msgSeq = 0;
+    int sock, len; 
+    uint32_t msgSeq = 0;
 
     if ((sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE)) < 0)
     {
