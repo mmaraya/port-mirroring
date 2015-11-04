@@ -373,7 +373,7 @@ char * printMACStr(const char* mac)
     return macStr;
 }
 
-int readNlSock(int sockFd, char* bufPtr, uint32_t seqNum, int pId)
+int readNlSock(int sockFd, char* bufPtr, uint32_t seqNum, uint32_t pId)
 {
     struct nlmsghdr* nlHdr;
     int              msgLen = 0;

@@ -68,7 +68,7 @@ int reopenSendHandle(const char* device);
 
 char * printMACStr(const char* mac);
 
-int readNlSock(int sockFd, char* bufPtr, uint32_t seqNum, int pId);
+int readNlSock(int sockFd, char* bufPtr, uint32_t seqNum, uint32_t pId);
 
 int getInterfaceMac(const char* device, char* mac);
 
