@@ -478,7 +478,6 @@ int getInterfaceIP(const char* device, unsigned int* ip)
 int getSenderInterface(unsigned int targetIP, char* device, char* mac)
 {
     struct nlmsghdr* nlMsg;
-    struct rtmsg*    rtMsg;
 
     char               msgBuf[BUFSIZE];
 
@@ -496,7 +495,6 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
 
     /* point the header and the msg structure pointers into the buffer */
     nlMsg = (struct nlmsghdr *)msgBuf;
-    rtMsg = (struct rtmsg *)NLMSG_DATA(nlMsg);
     /* Fill in the nlmsg header*/
     nlMsg->nlmsg_len   = NLMSG_LENGTH(sizeof(struct rtmsg)); // Length of message.
     nlMsg->nlmsg_type  = RTM_GETROUTE;                       // Get the routes from kernel routing table .
