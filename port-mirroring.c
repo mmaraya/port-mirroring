@@ -130,7 +130,7 @@ int			sendSocket = -1;   //send raw socket
 struct sockaddr_in	sendSocket_sa;
 char			senderMac[MACADDRLEN];
 char			remoteMac[MACADDRLEN];
-unsigned long		tLastInit = 0;
+time_t			tLastInit = 0;
 
 #ifdef  _ENABLE_THREADS
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
