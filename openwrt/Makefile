@@ -1,63 +1,35 @@
 ##############################################
-# OpenWrt Makefile for port-mirroring program
-#
-#
-# Most of the variables used here are defined in
-# the include directives below. We just need to
-# specify a basic description of the package,
-# where to build our program, where to find
-# the source files, and where to install the
-# compiled program on the router.
-#
-# Be very careful of spacing in this file.
-# Indents should be tabs, not spaces, and
-# there should be no trailing whitespace in
-# lines that are not commented.
-#
+# OpenWrt Makefile for port-mirroring package
+# https://github.com/mmaraya/port-mirroring
 ##############################################
 
 include $(TOPDIR)/rules.mk
 
-# Name and release number of this package
 PKG_NAME:=port-mirroring
 PKG_VERSION:=1.4.2
-PKG_RELEASE:=f6ead68b7760fa86e8da73ac1e062349f243ac93
-
-# This specifies the directory where we're going to build the program. 
-# The root build directory, $(BUILD_DIR), is by default the build_mipsel
-# directory in your OpenWrt SDK directory
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_RELEASE).tar.bz2
+PKG_RELEASE:=1
+PKG_MAINTAINER:=Mike Maraya <mike.maraya@gmail.com>
+PKG_LICENSE:=BSD-2-Clause
+PKG_LICENSE_FILES:=LICENSE
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_URL:=git://github.com/mmaraya/port-mirroring.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=$(PKG_RELEASE)
-
+PKG_SOURCE_VERSION:=f6ead68b7760fa86e8da73ac1e062349f243ac93
 PKG_FIXUP:=autoreconf
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 
-# Specify package information for this program.
-# The variables defined here should be self explanatory.
-# If you are running Kamikaze, delete the DESCRIPTION
-# variable below and uncomment the Kamikaze define
-# directive for the description below
 define Package/port-mirroring
 	SECTION:=net
 	CATEGORY:=Network
 	DEPENDS:=+libpcap +libpthread
-	TITLE:=port-mirroring tool
+	TITLE:=port-mirroring
 	URL:=https://github.com/mmaraya/port-mirroring
 	MENU:=1
 endef
 
-# Specify where and how to install the program. Since we only have one file,
-# the port-mirroring, install it by copying it to the /bin directory on
-# the router. The $(1) variable represents the root directory on the router running
-# OpenWrt. The $(INSTALL_DIR) variable contains a command to prepare the install
-# directory if it does not already exist.  Likewise $(INSTALL_BIN) contains the
-# command to copy the binary file from its current location (in our case the build
-# directory) to the install directory.
 define Package/port-mirroring/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/port-mirroring $(1)/usr/sbin/
@@ -86,9 +58,5 @@ fi
 exit 0
 endef
 
-# This line executes the necessary commands to compile our program.
-# The above define directives specify all the information needed, but this
-# line calls BuildPackage which in turn actually uses this information to
-# build a package.
 $(eval $(call BuildPackage,port-mirroring))
 
