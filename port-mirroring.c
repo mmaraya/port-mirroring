@@ -720,7 +720,7 @@ int initSendHandle()
 
 void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
 {
-    static char buf[2048];
+    static uint8_t buf[2048];
 
     if (header->len <= 2 * MACADDRLEN)
     {
