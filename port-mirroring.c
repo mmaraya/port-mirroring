@@ -139,19 +139,11 @@ pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
 char * getCurrentTime()
 {
-    time_t      tt;
-    struct  tm* vtm;
-    static char MacTime[20];
-
-    time(&tt);
-    vtm = localtime(&tt);
-
-    sprintf(MacTime, "%.4d-%.2d-%.2d %.2d:%.2d:%.2d",
-            (1900 + vtm->tm_year), vtm->tm_mon + 1,
-            vtm->tm_mday, vtm->tm_hour,
-            vtm->tm_min, vtm->tm_sec);
-    MacTime[19]=0;
-    return MacTime;
+    static char buf[32];
+    time_t t = time(NULL);
+    size_t len = strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%S%z", localtime(&t));
+    buf[len] = '\0';
+    return buf;
 }
 
 void writeLog(MYLOG_LEVEL ll, const char* message, ...)
