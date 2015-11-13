@@ -26,6 +26,9 @@
  *
  */
 
+#ifndef PORT_MIRRORING_H_
+#define PORT_MIRRORING_H_
+
 #include <stdint.h>
 
 #define ETH_ALEN    	6       /* Octets in one ethernet addr		*/
@@ -92,3 +95,4 @@ void sig_handler(int signum);
 
 int main(int argc, char** argv);
 
+#endif 	// PORT_MIRRORING_H_
