@@ -1,7 +1,7 @@
 # 
-# Copyright (c) 2012 Bruce Geng <gengw2000[at]163[dot]com>.
+# Copyright (c) 2015 OpenWrt.org
 #
-# All rights reserved, licensed under the BSD 2-Clause License.
+# This is free software, licensed under the BSD 2-Clause License.
 #
 
 include $(TOPDIR)/rules.mk
