@@ -10,7 +10,6 @@ addons:
       name: "mmaraya/port-mirroring"
       description: "port-mirroring sends copies of network packets from one network interface to another device on the network."
     notification_email: mike.maraya@gmail.com
-    build_command_prepend: "autoreconf -vfi ; ./configure"
     build_command: "make"
     branch_pattern: coverity_scan
 
@@ -21,7 +20,7 @@ install:
   - cp openwrt/Makefile OpenWrt-SDK-15.05-ar71xx-generic_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64/package/port-mirroring/ 
 
 script: 
-  - autoreconf -vfi && ./configure && make 
+  - make 
   - cd OpenWrt-SDK-15.05-ar71xx-generic_gcc-4.8-linaro_uClibc-0.9.33.2.Linux-x86_64 && make package/port-mirroring/compile 
 
 env:

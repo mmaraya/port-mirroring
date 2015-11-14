@@ -16,8 +16,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_URL:=git://github.com/mmaraya/port-mirroring.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=f6ead68b7760fa86e8da73ac1e062349f243ac93
-PKG_FIXUP:=autoreconf
+PKG_SOURCE_VERSION:=dde60fba9538130a629b200c2270309e7383f876
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
@@ -33,11 +32,11 @@ endef
 
 define Package/port-mirroring/install
 	$(INSTALL_DIR) $(1)/usr/sbin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/port-mirroring $(1)/usr/sbin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/bin/port-mirroring $(1)/usr/sbin/
 	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_CONF) $(PKG_BUILD_DIR)/port-mirroring.conf $(1)/etc/config/port-mirroring
+	$(INSTALL_CONF) $(PKG_BUILD_DIR)/openwrt/port-mirroring.conf $(1)/etc/config/port-mirroring
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/port-mirroringd $(1)/etc/init.d/port_mirroring
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/openwrt/port-mirroringd $(1)/etc/init.d/port_mirroring
 endef
 
 $(eval $(call BuildPackage,port-mirroring))
