@@ -370,7 +370,7 @@ bool nlmsg_ok(const struct nlmsghdr *nlh, ssize_t len)
 {
     if (len < (int) sizeof (struct nlmsghdr)) return false;
     if (nlh->nlmsg_len < sizeof(struct nlmsghdr)) return false;
-    if (nlh->nlmsg_len > len) return false;
+    if ((ssize_t) nlh->nlmsg_len > len) return false;
     if (nlh->nlmsg_type == NLMSG_ERROR) return false;	
     return true;
 } 
