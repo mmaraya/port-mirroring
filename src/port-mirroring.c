@@ -366,6 +366,15 @@ char * printMACStr(const char* mac)
     return macStr;
 }
 
+bool nlmsg_ok(const struct nlmsghdr *nlh, ssize_t len) 
+{
+    if (len < (int) sizeof (struct nlmsghdr)) return false;
+    if (nlh->nlmsg_len < sizeof(struct nlmsghdr)) return false;
+    if (nlh->nlmsg_len > len) return false;
+    if (nlh->nlmsg_type == NLMSG_ERROR) return false;	
+    return true;
+} 
+
 int readNlSock(int sockFd, char* bufPtr, uint32_t seqNum, uint32_t pId)
 {
     struct nlmsghdr* nlHdr;
@@ -384,10 +393,9 @@ int readNlSock(int sockFd, char* bufPtr, uint32_t seqNum, uint32_t pId)
         nlHdr = (struct nlmsghdr *)bufPtr;
 
         /* Check if the header is valid */
-        if ((NLMSG_OK(nlHdr, readLen) == 0) || (nlHdr->nlmsg_type == NLMSG_ERROR))
-        {
+        if (nlmsg_ok(nlHdr, readLen) == false) {
             writeLog(MYLOG_ERROR, "readNlSock, error in recieved packet.");
-            return -1;
+	    	return -1; 
         }
         /* Check if the its the last message */
         if (nlHdr->nlmsg_type == NLMSG_DONE)
@@ -512,7 +520,7 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
         return -1;
     }
 
-    for (; NLMSG_OK(nlMsg, len); nlMsg = NLMSG_NEXT(nlMsg, len)) {
+    for (; nlmsg_ok(nlMsg, len); nlMsg = NLMSG_NEXT(nlMsg, len)) {
         struct rtmsg*  rtMsg = (struct rtmsg *)NLMSG_DATA(nlMsg);
 
         if (rtMsg->rtm_family == AF_INET || rtMsg->rtm_table == RT_TABLE_MAIN)

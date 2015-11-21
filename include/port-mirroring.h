@@ -29,6 +29,7 @@
 #ifndef PORT_MIRRORING_H_
 #define PORT_MIRRORING_H_
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #define ETH_ALEN    	6       /* Octets in one ethernet addr		*/
@@ -70,6 +71,8 @@ void init();
 int reopenSendHandle(const char* device);
 
 char * printMACStr(const char* mac);
+
+bool nlmsg_ok(const struct nlmsghdr *nlh, ssize_t len);
 
 int readNlSock(int sockFd, char* bufPtr, uint32_t seqNum, uint32_t pId);
 
