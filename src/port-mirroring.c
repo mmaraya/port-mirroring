@@ -372,7 +372,7 @@ int readNlSock(int sockFd, char* bufPtr, uint32_t seqNum, uint32_t pId)
     int              msgLen = 0;
 
     do {
-	int readLen = 0;
+	ssize_t readLen = 0;
 
         /* Recieve response from the kernel */
         if ((readLen = recv(sockFd, bufPtr, BUFSIZE - msgLen, 0)) < 0)
@@ -474,7 +474,8 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
 
     char               msgBuf[BUFSIZE];
 
-    int sock, len; 
+    int sock;
+    ssize_t len = 0; 
     uint32_t msgSeq = 0;
 
     if ((sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE)) < 0)
