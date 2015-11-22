@@ -39,16 +39,11 @@ root@OpenWrt:~# opkg install port-mirroring_1.4.2_ar71xx.ipk
 Modify the `/etc/config/port-mirroring` file to suit your environment.  
 ```
 config 'port-mirroring'
-	option 'target' '192.168.2.5'
-	option 'source_ports' 'eth1'
-	option 'filter' ''
-	option 'protocol' 'TEE'
+    option source_ports 'eth0,wlan0'    # interface(s) to copy packets from
+    option target       '10.1.4.2'      # interface or IP address to send packets to
+    option protocol     'TEE'           # 'TEE' iptables or 'TZSP' TaZmen Sniffer Protocol 
+    option filter       ''              # optional tcpdump/libpcap packet filter expressions
 ```
-   * Set the `target` option to the IP address or network interface to copy packets to
-   * Set the `source_ports` option to the network interface you want to copy packets from
-   * Set the `filter` option to [pcap-filter](http://www.tcpdump.org/manpages/pcap-filter.7.html) expressions
-   * Set the `protocol` to use either the `TEE` [iptables](http://ipset.netfilter.org/iptables-extensions.man.html)  or `TZSP` [TaZmen Sniffer Protocol](https://en.wikipedia.org/wiki/TZSP) formats
-
 To start port-mirroring as a foreground process with debugging on:
 ```
 root@OpenWrt:~# port-mirroring --debug
