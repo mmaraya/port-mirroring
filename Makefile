@@ -1,25 +1,12 @@
 # 
-#  The MIT License (MIT)
+#  Makefile for https://github.com/mmaraya/port-mirroring
 # 
 #  Copyright (c) 2015 Mike Maraya <mike[dot]maraya[at]gmail[dot]com>
+#  All rights reserved.
 # 
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to deal
-#  in the Software without restriction, including without limitation the rights
-#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-# 
-#  The above copyright notice and this permission notice shall be included in
-#  all copies or substantial portions of the Software.
-# 
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#  SOFTWARE.
+#  This file is subject to the terms and conditions defined in
+#  https://github.com/mmaraya/port-mirroring/blob/master/LICENSE,
+#  which is part of this software package.
 # 
 
 SHELL     := /bin/sh
@@ -32,12 +19,12 @@ C_FILES   := $(wildcard $(SRC_DIR)/*.c)
 OBJ_FILES := $(addprefix $(OBJ_DIR)/,$(notdir $(C_FILES:.c=.o)))
 LIB_FILES := -lpcap -lpthread
 CC        := cc
-CC_FLAGS  := -g -Wall -Wextra -I$(INC_DIR)
+CC_FLAGS  := -g -Wall -Wextra -Werror -I$(INC_DIR)
 LD_FLAGS  := 
 
-.PHONY: all clean test
+.PHONY: all clean check
 
-all: $(BIN_DIR)/$(PROGRAM)
+all: $(BIN_DIR)/$(PROGRAM) check
 
 $(BIN_DIR)/$(PROGRAM): $(OBJ_FILES)
 	@mkdir -p $(@D)
@@ -50,3 +37,5 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 clean:
 	rm -f $(BIN_DIR)/$(PROGRAM) $(OBJ_DIR)/*.o
 
+check:
+	cppcheck --enable=all -I $(INC_DIR) $(SRC_DIR)/*.c
