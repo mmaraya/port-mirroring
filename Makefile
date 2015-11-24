@@ -24,7 +24,7 @@ LD_FLAGS  :=
 
 .PHONY: all clean check
 
-all: $(BIN_DIR)/$(PROGRAM) check
+all: $(BIN_DIR)/$(PROGRAM) 
 
 $(BIN_DIR)/$(PROGRAM): $(OBJ_FILES)
 	@mkdir -p $(@D)
