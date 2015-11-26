@@ -31,30 +31,30 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "util.h"
 
-#define ETH_ALEN    	6       /* Octets in one ethernet addr		*/
-#define ETH_P_ARP   	0x0806  /* Address Resolution packet		*/
-#define ETH_P_802_3 	0x0001  /* Dummy type for 802.3 frames 		*/
-#define ETH_P_IP    	0x0800  /* Internet Protocol packet		*/
-#define ARPOP_REQUEST   1   	/* ARP request				*/
-#define ARPOP_REPLY 	2       /* ARP reply				*/
-#define ARP_WAIT_TIME   500 	/* Arp Response waiting time (ms) 	*/
-#define ARP_ETH_PADDING 18  	/* 18 bytes ethernet padding 		*/
-#define MAX_SOURCE_IF   4   	/* maxium four source interfaces 	*/
-#define LINEBUF_MAX 	1024
-#define OPTION_MAX  	255
-#define TZSP_PORT   	37008
-#define ERRTIMEOUT  	20
-#define MACADDRLEN  	6
-#define BUFSIZE 	8192
+#define ETH_ALEN        6       /* Octets in one ethernet addr      */
+#define ETH_P_ARP       0x0806  /* Address Resolution packet        */
+#define ETH_P_802_3     0x0001  /* Dummy type for 802.3 frames      */
+#define ETH_P_IP        0x0800  /* Internet Protocol packet         */
+#define ARPOP_REQUEST   1       /* ARP request                      */
+#define ARPOP_REPLY     2       /* ARP reply                        */
+#define ARP_WAIT_TIME   500     /* Arp Response waiting time (ms)   */
+#define ARP_ETH_PADDING 18      /* 18 bytes ethernet padding        */
+#define MAX_SOURCE_IF   4       /* maxium four source interfaces    */
+#define LINEBUF_MAX     1024
+#define OPTION_MAX      255
+#define TZSP_PORT       37008
+#define ERRTIMEOUT      20
+#define MACADDRLEN      6
+#define BUFSIZE         8192
+#define TIMEBUF         32      /* max timestamp length in RFC 3339 */
 
 typedef enum
 {
     MYLOG_INFO = 0, //info
     MYLOG_ERROR     //error
 } MYLOG_LEVEL;
-
-char * getCurrentTime();
 
 void writeLog(MYLOG_LEVEL ll, const char* message, ...);
 

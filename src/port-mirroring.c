@@ -137,19 +137,14 @@ time_t			tLastInit = 0;
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
-char * getCurrentTime()
-{
-    static char buf[32];
-    time_t t = time(NULL);
-    size_t len = strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%S%z", localtime(&t));
-    buf[len] = '\0';
-    return buf;
-}
-
 void writeLog(MYLOG_LEVEL ll, const char* message, ...)
 {
+    char    buf[TIMEBUF] = {0};
     va_list arg_ptr;
+
+    now(buf, TIMEBUF); 
     va_start(arg_ptr, message);
+
     if (ll == MYLOG_INFO)
     {
         if (opt_syslog)
@@ -158,7 +153,7 @@ void writeLog(MYLOG_LEVEL ll, const char* message, ...)
         }
         else
         {
-            fprintf(stderr, "%s[info] ", getCurrentTime());
+            fprintf(stderr, "%s[info] ", buf);
             vfprintf(stderr, message, arg_ptr);
         }
     }
@@ -170,7 +165,7 @@ void writeLog(MYLOG_LEVEL ll, const char* message, ...)
         }
         else
         {
-            fprintf(stderr, "%s[error] ", getCurrentTime());
+            fprintf(stderr, "%s[error] ", buf);
             vfprintf(stderr, message, arg_ptr);
         }
     }
