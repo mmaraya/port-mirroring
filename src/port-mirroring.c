@@ -115,7 +115,6 @@ typedef struct
 char 			opt_config[OPTION_MAX];
 char 			opt_pid[OPTION_MAX];
 int  			opt_daemon      = 0;
-int  			opt_syslog      = 0;
 int  			opt_debug       = 0;
 int  			opt_promiscuous = 0;
 int  			opt_protocol    = 1;   //0 - TZSP, 1 - TEE
@@ -136,41 +135,6 @@ time_t			tLastInit = 0;
 #ifdef  _ENABLE_THREADS
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 #endif
-
-void writeLog(MYLOG_LEVEL ll, const char* message, ...)
-{
-    char    buf[TIMEBUF] = {0};
-    va_list arg_ptr;
-
-    now(buf, TIMEBUF); 
-    va_start(arg_ptr, message);
-
-    if (ll == MYLOG_INFO)
-    {
-        if (opt_syslog)
-        {
-            vsyslog(LOG_MAKEPRI(LOG_LOCAL1, LOG_INFO), message, arg_ptr);
-        }
-        else
-        {
-            fprintf(stderr, "%s[info] ", buf);
-            vfprintf(stderr, message, arg_ptr);
-        }
-    }
-    else if (ll == MYLOG_ERROR)
-    {
-        if (opt_syslog)
-        {
-            vsyslog(LOG_MAKEPRI(LOG_LOCAL1, LOG_ERR), message, arg_ptr);
-        }
-        else
-        {
-            fprintf(stderr, "%s[error] ", buf);
-            vfprintf(stderr, message, arg_ptr);
-        }
-    }
-    va_end(arg_ptr);
-}
 
 void addMonitoringSource(const char* s)
 {
@@ -296,7 +260,7 @@ int loadCfg(const char* fpath)
                 }
                 else
                 {
-                    writeLog(MYLOG_ERROR, "port-mirroring::loadCfg, protocol [%s] syntax error.\n", value);
+                    syslog(LOG_ERR, "protocol '%s' unknown, use 'TEE' or 'TZSP'", value);
                 }
             }
         }
@@ -330,24 +294,18 @@ int reopenSendHandle(const char* device)
     char errbuf[PCAP_ERRBUF_SIZE] = {0};
     if (sendHandle != NULL)
     {
-        if (opt_debug)
-        {
-            writeLog(MYLOG_ERROR, "port-mirroring::reopenSendHandle, reopen send handle, dev=\"%s\".\n", mirroring_target_if);
-        }
+        syslog(LOG_DEBUG, "re-opening target device '%s'", mirroring_target_if);
         pcap_close(sendHandle);
     }
     sendHandle = pcap_open_live(device, 65536, 0, 100, errbuf);
     if (sendHandle == NULL)
     {
-        writeLog(MYLOG_ERROR, "port-mirroring::reopenSendHandle, couldn't open device \"%s\": %s\n", mirroring_target_if, errbuf);
+        syslog(LOG_ERR, "could not open target device '%s': %s", mirroring_target_if, errbuf);
         return -1;
     }
     else
     {
-        if (opt_debug)
-        {
-            writeLog(MYLOG_INFO, "port-mirroring::reopenSendHandle %s success.\n", device);
-        }
+        syslog(LOG_DEBUG, "re-opened target device '%s'", device);
     }
     return 0;
 }
@@ -361,13 +319,13 @@ char * printMACStr(const char* mac)
     return macStr;
 }
 
-bool nlmsg_ok(const struct nlmsghdr *nlh, ssize_t len) 
+int nlmsg_ok(const struct nlmsghdr *nlh, ssize_t len) 
 {
-    if (len < (int) sizeof (struct nlmsghdr)) return false;
-    if (nlh->nlmsg_len < sizeof(struct nlmsghdr)) return false;
-    if ((ssize_t) nlh->nlmsg_len > len) return false;
-    if (nlh->nlmsg_type == NLMSG_ERROR) return false;	
-    return true;
+    if (len < (int) sizeof (struct nlmsghdr)) return 0;
+    if (nlh->nlmsg_len < sizeof(struct nlmsghdr)) return 0;
+    if ((ssize_t) nlh->nlmsg_len > len) return 0;
+    if (nlh->nlmsg_type == NLMSG_ERROR) return 0;
+    return 1;
 } 
 
 int readNlSock(int sockFd, char* bufPtr, uint32_t seqNum, uint32_t pId)
@@ -381,15 +339,15 @@ int readNlSock(int sockFd, char* bufPtr, uint32_t seqNum, uint32_t pId)
         /* Recieve response from the kernel */
         if ((readLen = recv(sockFd, bufPtr, BUFSIZE - msgLen, 0)) < 0)
         {
-            writeLog(MYLOG_ERROR, "readNlSock, socket read error.");
+            syslog(LOG_ERR, "unable to read from socket: %s", strerror(errno));
             return -1;
         }
 
         nlHdr = (struct nlmsghdr *)bufPtr;
 
         /* Check if the header is valid */
-        if (nlmsg_ok(nlHdr, readLen) == false) {
-            writeLog(MYLOG_ERROR, "readNlSock, error in recieved packet.");
+        if (!nlmsg_ok(nlHdr, readLen)) {
+            syslog(LOG_ERR, "error in recieved packet");
 	    	return -1; 
         }
         /* Check if the its the last message */
@@ -421,7 +379,7 @@ int getInterfaceMac(const char* device, char* mac)
 
     if ((s = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
     {
-        writeLog(MYLOG_ERROR, "getInterfaceMac, create socket error.");
+        syslog(LOG_ERR, "unable to create socket: '%s'", strerror(errno));
         return -1;
     }
     memset(&buffer, 0x00, sizeof(buffer));
@@ -430,15 +388,15 @@ int getInterfaceMac(const char* device, char* mac)
 
     if (ioctl(s, SIOCGIFHWADDR, &buffer) < 0)
     {
-        writeLog(MYLOG_ERROR, "getInterfaceMac, unable to query mac address of [%s].\n", device);
+        syslog(LOG_ERR, "unable to query %s MAC address: '%s'",
+                device,
+                strerror(errno));
         close(s);
         return -1;
     }
 
     close(s);
-
     memcpy(mac, buffer.ifr_hwaddr.sa_data, MACADDRLEN);
-
     return 0;
 }
 
@@ -449,7 +407,7 @@ int getInterfaceIP(const char* device, unsigned int* ip)
 
     if ((s = socket(PF_INET, SOCK_DGRAM, 0)) < 0)
     {
-        writeLog(MYLOG_ERROR, "getInterfaceIP, create socket error.");
+        syslog(LOG_ERR, "unable to create socket: '%s'", strerror(errno));
         return -1;
     }
     memset(&buffer, 0x00, sizeof(buffer));
@@ -459,15 +417,13 @@ int getInterfaceIP(const char* device, unsigned int* ip)
 
     if (ioctl(s, SIOCGIFADDR, &buffer) < 0)
     {
-        writeLog(MYLOG_ERROR, "getInterfaceIP, unable to query mac address of [%s].\n", device);
+        syslog(LOG_ERR, "unable to query %s MAC address: '%s'", device, strerror(errno));
         close(s);
         return -1;
     }
 
     close(s);
-
     *ip = ((struct sockaddr_in *)&buffer.ifr_addr)->sin_addr.s_addr;
-
     return 0;
 }
 
@@ -483,34 +439,29 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
 
     if ((sock = socket(PF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE)) < 0)
     {
-        writeLog(MYLOG_ERROR, "getSenderInterface, create socket error.");
+        syslog(LOG_ERR, "unable to create socket: '%s'", strerror(errno));
         return -1;
     }
 
-    /* Initialize the buffer */
     memset(msgBuf, 0, BUFSIZE);
 
-    /* point the header and the msg structure pointers into the buffer */
     nlMsg = (struct nlmsghdr *)msgBuf;
-    /* Fill in the nlmsg header*/
-    nlMsg->nlmsg_len   = NLMSG_LENGTH(sizeof(struct rtmsg)); // Length of message.
-    nlMsg->nlmsg_type  = RTM_GETROUTE;                       // Get the routes from kernel routing table .
-    nlMsg->nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST;         // The message is a request for dump.
-    nlMsg->nlmsg_seq   = msgSeq++;                           // Sequence of the message packet.
-    nlMsg->nlmsg_pid   = getpid();                           // PID of process sending the request.
+    nlMsg->nlmsg_len   = NLMSG_LENGTH(sizeof(struct rtmsg));
+    nlMsg->nlmsg_type  = RTM_GETROUTE;
+    nlMsg->nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST;
+    nlMsg->nlmsg_seq   = msgSeq++;
+    nlMsg->nlmsg_pid   = getpid();
 
-    /* Send the request */
     if (send(sock, nlMsg, nlMsg->nlmsg_len, 0) < 0)
     {
-        writeLog(MYLOG_ERROR, "getSenderInterface, write to socket failed.");
+        syslog(LOG_ERR, "unable to write to socket: '%s'", strerror(errno));
         close(sock);
         return -1;
     }
 
-    /* Read the response */
     if ((len = readNlSock(sock, msgBuf, msgSeq, getpid())) < 0)
     {
-        writeLog(MYLOG_ERROR, "getSenderInterface, readNlSock failed.");
+        syslog(LOG_ERR, "unable to read from socket: '%s'", strerror(errno));
         close(sock); 
         return -1;
     }
@@ -547,7 +498,9 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
                         strcpy(device, ifName);
                         if (opt_debug)
                         {
-                            writeLog(MYLOG_INFO, "getSenderInterface, device=[%s], mac=[%s].\n", device, printMACStr(mac));
+                            syslog(LOG_INFO, "sending from device '%s' with MAC address '%s'",
+                                    device,
+                                    printMACStr(mac));
                         }
                         return 0;
                     }
@@ -575,12 +528,12 @@ int getRemoteARP(unsigned int targetIP, const char* device, char* mac)
 
     if (pHandle == NULL)
     {
-        writeLog(MYLOG_ERROR, "port-mirroring::sendARP, couldn't open device \"%s\": %s\n", device, errbuf);
+        syslog(LOG_ERR, "unable to open capture device %s: %s", device, errbuf);
         return -1;
     }
     if (getInterfaceIP(device, &localIP) < 0)
     {
-        writeLog(MYLOG_ERROR, "port-mirroring::sendARP, couldn't get ip of device \"%s\".\n", device);
+        syslog(LOG_ERR, "unable to get IP address for %s", device);
         pcap_close(pHandle);
         return -1;
     }
@@ -608,7 +561,7 @@ int getRemoteARP(unsigned int targetIP, const char* device, char* mac)
 
     while (1) {
         int res = pcap_next_ex(pHandle, &header, &pkt_data);
-        if (res > 0)
+        if (res == 1)
         {
             if (*(unsigned short *)(pkt_data + 12) == htons(0x0806) &&
                 header->len >= sizeof(ARPPACKET))
@@ -620,16 +573,16 @@ int getRemoteARP(unsigned int targetIP, const char* device, char* mac)
                     found = 0;
                     if (opt_debug)
                     {
-                        writeLog(MYLOG_INFO, "getRemoteARP, filter=[%s], device=[%s], remote mac=[%s].\n",
-                                 filter,
+                        syslog(LOG_INFO, "ARP reply on '%s'['%s'] filter '%s'",
                                  device,
-                                 printMACStr(mac));
+                                 printMACStr(mac),
+                                 filter);
                     }
                     break;
                 }
             }
         }
-        else if (res == 0)
+        if (res == 0)
         {
             if (sent++ < 2)
             {
@@ -640,12 +593,9 @@ int getRemoteARP(unsigned int targetIP, const char* device, char* mac)
                 break;
             }
         }
-        else
+        if (res == -1)
         {
-            if (opt_debug)
-            {
-                writeLog(MYLOG_INFO, "getRemoteARP, capture packets error occured.\n");
-            }
+            syslog(LOG_ERR, "error reading packet: %s", pcap_geterr(pHandle));
             break;
         }
     }
@@ -662,34 +612,33 @@ int initSendHandle()
     {
         reopenSendHandle(mirroring_target_if);
     }
-    else
+
+    if (mirroring_type == 1)
     {
         if (opt_protocol == 0)
         {
             /* TZSP format */
             int sendBufSize = 65536;
-            int retval;
             sendSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
             if (sendSocket == -1)
             {
-                writeLog(MYLOG_ERROR, "port-mirroring::initSendHandle, couldn't create socket.\n");
+                syslog(LOG_ERR, "unable to create socket: '%s'", strerror(errno));
                 return -1;
             }
-            retval = setsockopt(sendSocket, SOL_SOCKET, SO_SNDBUF, (char *)&sendBufSize, sizeof(sendBufSize));
-            if (retval < 0) {
-                writeLog(MYLOG_ERROR, "port-mirroring::initSendHandle, couldn't set socket options.\n");
+            if (setsockopt(sendSocket, SOL_SOCKET, SO_SNDBUF, (char *)&sendBufSize, sizeof(sendBufSize)))
+            {
+                syslog(LOG_ERR, "unable to set socket options: '%s'", strerror(errno));
                 return -1;
             }
             sendSocket_sa.sin_family      = AF_INET;
             sendSocket_sa.sin_port        = htons(TZSP_PORT);
             sendSocket_sa.sin_addr.s_addr = mirroring_target_ip;
         }
-        else if (opt_protocol == 1)
+
+        if (opt_protocol == 1)
         {
             /* TEE format */
-            char device[IF_NAMESIZE] = {
-                0
-            };
+            char device[IF_NAMESIZE] = {0};
             if (getSenderInterface(mirroring_target_ip, device, senderMac) == 0)
             {
                 if (getRemoteARP(mirroring_target_ip, device, remoteMac) == 0)
@@ -698,17 +647,15 @@ int initSendHandle()
                 }
                 else
                 {
-                    writeLog(MYLOG_ERROR, "port-mirroring::initSendHandle, can not get mac address of remote host.\n");
+                    syslog(LOG_ERR, "unable to get MAC for destination IP address");
+                    return -1;
                 }
             }
             else
             {
-                writeLog(MYLOG_ERROR, "port-mirroring::initSendHandle, can not get sender interface.\n");
+                syslog(LOG_ERR, "unable to get sender interface for destination IP address");
+                return -1;
             }
-        }
-        else
-        {
-            writeLog(MYLOG_ERROR, "port-mirroring::initSendHandle, unknown protocol.\n");
         }
     }
 
@@ -740,11 +687,11 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
                 {
                     if (sendHandle != NULL)
                     {
-                        writeLog(MYLOG_ERROR, "port-mirroring::packet_handler_ex, transmit packet error: \"%s\".\n", pcap_geterr(sendHandle));
+                        syslog(LOG_ERR, "error sending packet: '%s'", pcap_geterr(sendHandle));
                     }
                     else
                     {
-                        writeLog(MYLOG_ERROR, "port-mirroring::packet_handler_ex, sendHandle is null.\n");
+                        syslog(LOG_ERR, "sendHandle is NULL");
                     }
                 }
                 initSendHandle();
@@ -770,11 +717,11 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
                     {
                         if (sendHandle != NULL)
                         {
-                            writeLog(MYLOG_ERROR, "port-mirroring::packet_handler_ex, transmit packet error(TEE): \"%s\".\n", pcap_geterr(sendHandle));
+                            syslog(LOG_ERR, "unable to send TEE packet: '%s'", pcap_geterr(sendHandle));
                         }
                         else
                         {
-                            writeLog(MYLOG_ERROR, "port-mirroring::packet_handler_ex, sendHandle is null(TEE).\n");
+                            syslog(LOG_ERR, "sendHandle is null");
                         }
                     }
                     initSendHandle();
@@ -858,15 +805,8 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
     #ifdef  _ENABLE_THREADS
     pthread_mutex_unlock(&mutex1);
     #endif
-    if (opt_debug)
-    {
-        debug_packets++;
-        if (debug_packets >= 1000)
-        {
-            writeLog(MYLOG_INFO, "port-mirroring, 1000 packets mirrored.\n");
-            debug_packets = 0;
-        }
-    }
+
+    debug_packets++;
 }
 
 void * start_mirroring(void* dev)
@@ -889,7 +829,7 @@ start_handle:
     handle = pcap_open_live((const char *)dev, 65536, opt_promiscuous, 100, errbuf);
     if (handle == NULL)
     {
-        writeLog(MYLOG_ERROR, "port-mirroring::start_mirroring, couldn't open device \"%s\": %s\n", (const char *)dev, errbuf);
+        syslog(LOG_ERR, "unable to open target device '%s': %s", (const char *) dev, errbuf);
         return NULL;
     }
 
@@ -897,13 +837,13 @@ start_handle:
     {
         if (pcap_compile(handle, &fp, mirroring_filter, 0, 0) == -1)
         {
-            writeLog(MYLOG_ERROR, "port-mirroring::start_mirroring, couldn't parse filter \"%s\": %s\n", mirroring_filter, pcap_geterr(handle));
+            syslog(LOG_ERR, "unable to parse filter '%s': '%s'", mirroring_filter, pcap_geterr(handle));
             pcap_close(handle);
             return NULL;
         }
         if (pcap_setfilter(handle, &fp) == -1)
         {
-            writeLog(MYLOG_ERROR, "port-mirroring::start_mirroring, couldn't install filter \"%s\": %s\n", mirroring_filter, pcap_geterr(handle));
+            syslog(LOG_ERR, "unable to set filter '%s': '%s'", mirroring_filter, pcap_geterr(handle));
             pcap_close(handle);
             return NULL;
         }
@@ -926,10 +866,10 @@ start_handle:
     }
     if (res == -1 && handle != NULL)
     {
-        writeLog(MYLOG_ERROR, "port-mirroring::start_mirroring, error reading the packets from \"%s\": %s\n", (const char *)dev, pcap_geterr(handle));
+        syslog(LOG_ERR, "unable to read packets from '%s': '%s'", (const char *)dev, pcap_geterr(handle));
         pcap_close(handle);
         sleep(ERRTIMEOUT);
-        writeLog(MYLOG_ERROR, "port-mirroring::start_mirroring, reopen device \"%s\".\n", (const char *)dev);
+        syslog(LOG_INFO, "re-open device '%s'", (const char *)dev);
         goto start_handle;
     }
     return NULL;
@@ -957,7 +897,7 @@ int fork_daemon()
     pid = fork();
     if (pid < 0)
     {
-        writeLog(MYLOG_ERROR, "port-mirroring::fork_daemon, fork failed.\n");
+        syslog(LOG_ERR, "unable to fork child process: '%s'", strerror(errno));
         return -1;
     }
     /* If we got a good PID, then
@@ -970,14 +910,11 @@ int fork_daemon()
     /* Change the file mode mask */
     umask(0);
 
-    /* Open any logs here */
-
     /* Create a new SID for the child process */
     sid = setsid();
     if (sid < 0)
     {
-        /* Log the failure */
-        writeLog(MYLOG_ERROR, "port-mirroring::fork_daemon, setsid failed.\n");
+        syslog(LOG_ERR, "unable to create new SID: '%s'", strerror(errno));
         return -1;
     }
 
@@ -1000,7 +937,7 @@ void sig_handler(int signum)
     {
         fprintf(stderr, "signal captured, opt_pid=[%s],signum=[%d].\n", opt_pid, signum);
     }
-    writeLog(MYLOG_INFO, "port-mirroring stopped.\n");
+    syslog(LOG_INFO, "received signal %d", signum);
     if (opt_daemon && opt_pid[0] != '\0')
     {
         unlink(opt_pid);
@@ -1018,13 +955,13 @@ int main(int argc, char** argv)
         {"pid", required_argument, 0, 'p'},
         {"daemon", no_argument, 0, 'b'},
         {"debug", no_argument, 0, 'd' },
-        {"syslog", no_argument, 0, 's'},
         {NULL, 0, NULL, 0}
     };
 
-    init();
+    openlog(LOG_IDENT, LOG_CONS || LOG_PID, LOG_USER);
 
-    while ((c = getopt_long(argc, argv, "c:p:bds",
+    init();
+    while ((c = getopt_long(argc, argv, "c:p:bd",
                             long_options, &option_index)) != -1) {
         switch (c)
         {
@@ -1033,6 +970,7 @@ int main(int argc, char** argv)
                 {
                     strncpy(opt_config, optarg, OPTION_MAX);
                     opt_config[OPTION_MAX - 1] = '\0';
+                    syslog(LOG_INFO, "configuration file: '%s'", opt_config);
                 }
                 break;
             case 'p':
@@ -1040,16 +978,16 @@ int main(int argc, char** argv)
                 {
                     strncpy(opt_pid, optarg, OPTION_MAX);
                     opt_pid[OPTION_MAX - 1] = '\0';
+                    syslog(LOG_INFO, "process id selected: '%s'", opt_pid);
                 }
                 break;
             case 'b':
                 opt_daemon = 1;
+                syslog(LOG_INFO, "running as background proces");
                 break;
             case 'd':
                 opt_debug = 1;
-                break;
-            case 's':
-                opt_syslog = 1;
+                syslog(LOG_INFO, "debugging mode selected");
                 break;
             default:
                 break;
@@ -1058,20 +996,20 @@ int main(int argc, char** argv)
 
     if (opt_daemon && fork_daemon() == -1)
     {
-        //fork_daemon failed.
+        syslog(LOG_ERR, "unable to run as a background process, exiting");
         return -1;
     }
 
-    write_pid();    //write pid file
+    write_pid();
 
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
 
-    if (opt_config[0] != '\0')
+    if (opt_config[0])
     {
         if (loadCfg(opt_config) == -1)
         {
-            writeLog(MYLOG_ERROR, "port-mirroring::main, can not find configure file[%s].\n", opt_config);
+            syslog(LOG_ERR, "unable to open config file '%s', exiting", opt_config);
             return -1;
         }
     }
@@ -1079,21 +1017,21 @@ int main(int argc, char** argv)
     {
         if (loadCfg("/etc/config/port-mirroring") == -1)
         {
+            syslog(LOG_ERR, "unable to open config file '/etc/config/port-mirroring'");
             if (loadCfg("/etc/port-mirroring") == -1)
             {
-                writeLog(MYLOG_ERROR, "port-mirroring::main, can not find configure file.\n");
+                syslog(LOG_ERR, "unable to open config file '/etc/port-mirroring', exiting");
                 return -1;
             }
         }
     }
 
-    writeLog(MYLOG_INFO, "port-mirroring::main, mirroring_type:[%s][%s], mirroring_source_num:[%d], target:[%s], filter:[%s], opt_promiscuous:[%d].\n",
-             mirroring_type == 0 ? "interface" : "remote",
-             opt_protocol == 0 ? "TZSP" : "TEE",
+    syslog(LOG_INFO, "src: %d dst: %s proto: %s filter: '%s' promisc: %s",
              mirroring_source_num,
              mirroring_target_if,
+             opt_protocol ? "TEE" : "TZSP",
              mirroring_filter,
-             opt_promiscuous);
+             opt_promiscuous ? "on" : "off");
 
     if (initSendHandle() != 0)
     {
@@ -1105,7 +1043,7 @@ int main(int argc, char** argv)
     for (i = 0; i < mirroring_source_num; i++) {
         if (mirroring_type == 0 && strcmp(mirroring_target_if, mirroring_source[i]) == 0)
         {
-            writeLog(MYLOG_INFO, "port-mirroring::main, source interface[%s] is ignored.\n", mirroring_target_if);
+            syslog(LOG_INFO, "src %s ignored", mirroring_target_if);
         }
         else
         {
@@ -1114,17 +1052,19 @@ int main(int argc, char** argv)
             pthread_join(thread1, NULL);
         }
     }
+    syslog(LOG_INFO, "POSIX threads available, running multiple-threaded");
     while (1) {
         sleep(1000);
     }
     #else
 
-    writeLog(MYLOG_INFO, "port-mirroring::main, thread disabled.\n");
-
+    syslog(LOG_INFO, "POSIX threads unavailable, running single-threaded");
     start_mirroring(mirroring_source[0]);
 
     #endif
 
+    syslog(LOG_INFO, "exiting: %d packets mirrored", debug_packets);
+    closelog();
     return 0;
 }
 
