@@ -1,7 +1,7 @@
 port-mirroring [![Build Status](https://travis-ci.org/mmaraya/port-mirroring.svg?branch=master)](https://travis-ci.org/mmaraya/port-mirroring) [![Coverity Scan Build Status](https://scan.coverity.com/projects/6700/badge.svg)](https://scan.coverity.com/projects/mmaraya-port-mirroring)
 ==============
 
-port-mirroring sends copies of network packets from one network interface to another device on the network. This is useful for applications that monitor network traffic such as intrusion detection systems, network application debugging, or network performance monitoring. This is a continuation of the work started by Bruce Geng  at https://code.google.com/p/port-mirroring/ as that project does not appear to be actively maintained.
+port-mirroring sends copies of network packets from one or more network interfaces on your OpenWrt router to another device on the network. This is useful for applications that monitor network traffic such as intrusion detection systems, network application debugging, or network performance monitoring. This is a continuation of the work started by Bruce Geng at https://code.google.com/p/port-mirroring/.
 
 Supported Platforms
 -------------------
@@ -36,7 +36,7 @@ root@OpenWrt:~# cd /tmp
 root@OpenWrt:~# wget https://github.com/mmaraya/port-mirroring/releases/download/v1.4.2/port-mirroring_1.4.2_ar71xx.ipk
 root@OpenWrt:~# opkg install port-mirroring_1.4.2_ar71xx.ipk
 ```
-Modify the `/etc/config/port-mirroring` file to suit your environment.  
+The last command will install the package and start it as a background process using the default configuration file. The default settings will probably not work on your environment, so the program should exit right after starting. Modify the `/etc/config/port-mirroring` file to suit your environment.
 ```
 config 'port-mirroring'
     option source_ports 'eth0,wlan0'    # interface(s) to copy packets from
@@ -67,7 +67,6 @@ Build Prerequisites
 To compile the OpenWrt package, you will need the following:
 
    * [OpenWrt SDK](http://wiki.openwrt.org/doc/howto/obtain.firmware.sdk)
-   * autoconf
    * ccache
    * libpcap-dev
    * cppcheck (optional)
