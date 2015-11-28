@@ -6,7 +6,7 @@ port-mirroring sends copies of network packets from one or more network interfac
 Supported Platforms
 -------------------
 
-port-mirroring runs on all [hardware platforms supported by OpenWrt](http://wiki.openwrt.org/toh/start). 
+port-mirroring runs on all hardware platforms [supported](http://wiki.openwrt.org/toh/start) by OpenWrt. 
 
 Download
 --------
@@ -52,11 +52,15 @@ To start port-mirroring as a daemon:
 ```
 root@OpenWrt:~# /etc/init.d/port_mirroring start
 ```
+To read the port-mirroring system logs:
+```
+root@OpenWrt:~# logread | grep port-mirroring
+```
 To stop the port-mirroring daemon:
 ```
 root@OpenWrt:~# /etc/init.d/port_mirroring stop
 ```
-To uninstall the port-mirroring package
+To uninstall the port-mirroring package:
 ```
 root@OpenWrt:~# opkg remove port-mirroring
 ```
