@@ -1,28 +1,10 @@
 /*
- * Copyright (c) 2012 Bruce Geng <gengw2000[at]163[dot]com>.
+ * Copyright (c) 2015 Mike Maraya <mike[dot]maraya[at]gmail[dot]com>
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * This file is subject to the terms and conditions defined in
+ * https://github.com/mmaraya/port-mirroring/blob/master/LICENSE,
+ * which is part of this software package.
  *
  */
 
@@ -50,16 +32,7 @@
 #define MACADDRLEN      6
 #define BUFSIZE         8192
 #define TIMEBUF         32                  /* max timestamp length RFC3339 */
-
-typedef enum
-{
-    MYLOG_INFO = 0, //info
-    MYLOG_ERROR     //error
-} MYLOG_LEVEL;
-
-void writeLog(MYLOG_LEVEL ll, const char* message, ...);
-
-void addMonitoringSource(const char* s);
+#define SNAP_LEN        65535               /* pcap snapshot length */
 
 char * getUCIItem(char* buf, char* item);
 
@@ -96,7 +69,5 @@ void write_pid();
 int fork_daemon();
 
 void sig_handler(int signum);
-
-int main(int argc, char** argv);
 
 #endif 	// PORT_MIRRORING_H_

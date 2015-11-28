@@ -112,25 +112,25 @@ typedef struct
 }ARPPACKET;
 
 //options:
-char 			opt_config[OPTION_MAX];
-char 			opt_pid[OPTION_MAX];
-int  			opt_daemon      = 0;
-int  			opt_debug       = 0;
-int  			opt_promiscuous = 0;
-int  			opt_protocol    = 1;   //0 - TZSP, 1 - TEE
-int  			debug_packets = 0;
-int			mirroring_type = 0; /* 0 - to interface, 1 - to remote ip address */
-char			mirroring_target_if[OPTION_MAX];
-unsigned int		mirroring_target_ip;
-int			mirroring_source_num = 0;
-char			mirroring_source[MAX_SOURCE_IF][OPTION_MAX];
-char			mirroring_filter[OPTION_MAX];
-pcap_t*			sendHandle = NULL; //send pcap handle
-int			sendSocket = -1;   //send raw socket
-struct sockaddr_in	sendSocket_sa;
-char			senderMac[MACADDRLEN];
-char			remoteMac[MACADDRLEN];
-time_t			tLastInit = 0;
+char                opt_config[OPTION_MAX];
+char                opt_pid[OPTION_MAX];
+int                 opt_daemon      = 0;
+int                 opt_debug       = 0;
+int                 opt_promiscuous = 0;
+int                 opt_protocol    = 1;   //0 - TZSP, 1 - TEE
+int                 debug_packets = 0;
+int                 mirroring_type = 0; /* 0 - to interface, 1 - to remote ip address */
+char                mirroring_target_if[OPTION_MAX];
+unsigned int        mirroring_target_ip;
+int                 mirroring_source_num = 0;
+char                mirroring_source[MAX_SOURCE_IF][OPTION_MAX];
+char                mirroring_filter[OPTION_MAX];
+pcap_t              *sendHandle = NULL; //send pcap handle
+int                 sendSocket = -1;   //send raw socket
+struct sockaddr_in  sendSocket_sa;
+char                senderMac[MACADDRLEN];
+char                remoteMac[MACADDRLEN];
+time_t              tLastInit = 0;
 
 #ifdef  _ENABLE_THREADS
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
@@ -297,7 +297,7 @@ int reopenSendHandle(const char* device)
         syslog(LOG_DEBUG, "re-opening target device '%s'", mirroring_target_if);
         pcap_close(sendHandle);
     }
-    sendHandle = pcap_open_live(device, 65536, 0, 100, errbuf);
+    sendHandle = pcap_open_live(device, SNAP_LEN, 0, 100, errbuf);
     if (sendHandle == NULL)
     {
         syslog(LOG_ERR, "could not open target device '%s': %s", mirroring_target_if, errbuf);
@@ -512,19 +512,19 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
     return 1;
 }
 
-int getRemoteARP(unsigned int targetIP, const char* device, char* mac)
+int getRemoteARP(unsigned int targetIP, const char *device, char *mac)
 {
     unsigned int        localIP;
     char                errbuf[PCAP_ERRBUF_SIZE] = {0};
     ARPPACKET           arp;
     struct bpf_program  fp;
-    struct pcap_pkthdr* header;
-    const u_char*       pkt_data;
+    struct pcap_pkthdr  *header;
+    const u_char        *pkt_data;
     int                 sent        = 0;
     int                 found       = 1;
     char                filter[100] = {0};
     struct in_addr      addr;
-    pcap_t*             pHandle = pcap_open_live(device, 65536, 0, 500, errbuf);
+    pcap_t              *pHandle = pcap_open_live(device, SNAP_LEN, 0, ARP_WAIT_TIME, errbuf);
 
     if (pHandle == NULL)
     {
@@ -618,7 +618,7 @@ int initSendHandle()
         if (opt_protocol == 0)
         {
             /* TZSP format */
-            int sendBufSize = 65536;
+            int sendBufSize = SNAP_LEN;
             sendSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
             if (sendSocket == -1)
             {
@@ -817,16 +817,16 @@ void * start_mirroring(void* dev)
     int                 res = 0;
     struct pcap_pkthdr* header;
     const u_char*       pkt_data;
+
 #ifdef  _ENABLE_THREADS
     sigset_t mask;
-
     sigaddset(&mask, SIGINT);
     sigaddset(&mask, SIGTERM);
     pthread_sigmask(SIG_BLOCK, &mask, NULL);
 #endif
 
 start_handle:
-    handle = pcap_open_live((const char *)dev, 65536, opt_promiscuous, 100, errbuf);
+    handle = pcap_open_live((const char *)dev, SNAP_LEN, opt_promiscuous, 100, errbuf);
     if (handle == NULL)
     {
         syslog(LOG_ERR, "unable to open target device '%s': %s", (const char *) dev, errbuf);
@@ -945,7 +945,7 @@ void sig_handler(int signum)
     exit(1);
 }
 
-int main(int argc, char** argv)
+int main(int argc, char *argv[])
 {
     int c;
     int option_index = 0;
@@ -1026,12 +1026,12 @@ int main(int argc, char** argv)
         }
     }
 
-    syslog(LOG_INFO, "src: %d dst: %s proto: %s filter: '%s' promisc: %s",
-             mirroring_source_num,
+    syslog(LOG_INFO, "settings: src=%s dst=%s proto=%s promisc=%s filter='%s'",
+             mirroring_source[mirroring_source_num],
              mirroring_target_if,
              opt_protocol ? "TEE" : "TZSP",
-             mirroring_filter,
-             opt_promiscuous ? "on" : "off");
+             opt_promiscuous ? "on" : "off",
+             mirroring_filter);
 
     if (initSendHandle() != 0)
     {
