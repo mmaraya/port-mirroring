@@ -11,6 +11,8 @@
 #ifndef PORT_MIRRORING_UTIL_H_
 #define PORT_MIRRORING_UTIL_H_
 
+#define TIMEBUF 32  /* max timestamp length RFC3339 */
+
 void now(char* buf, const size_t size);
 
 #endif  // PORT_MIRRORING_UTIL_H_

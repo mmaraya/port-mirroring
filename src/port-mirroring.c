@@ -196,7 +196,7 @@ int getUCIConf(char* buf, char* option, char* value)
     return -1;
 }
 
-int loadCfg(const char* fpath)
+int loadCfg(const char *fpath)
 {
     FILE* fp = fopen(fpath, "r");
     char  sline[LINEBUF_MAX];
@@ -268,6 +268,7 @@ int loadCfg(const char* fpath)
     }
 
     fclose(fp);
+    syslog(LOG_INFO, "using configuration file: %s", fpath);
     return 0;
 }
 
@@ -895,17 +896,15 @@ int fork_daemon()
 
     /* Fork off the parent process */
     pid = fork();
-    if (pid < 0)
+    if (pid == -1)
     {
         syslog(LOG_ERR, "unable to fork child process: '%s'", strerror(errno));
         return -1;
     }
-    /* If we got a good PID, then
-       we can exit the parent process. */
-    if (pid > 0)
-    {
-        exit(EXIT_SUCCESS);
-    }
+
+    /* If we got a good PID, then we can exit the parent process. */
+    syslog(LOG_INFO, "forked parent process with pid: %d", pid);
+    exit(EXIT_SUCCESS);
 
     /* Change the file mode mask */
     umask(0);
@@ -942,6 +941,8 @@ void sig_handler(int signum)
     {
         unlink(opt_pid);
     }
+    syslog(LOG_INFO, "program exiting: %d packets mirrored", debug_packets);
+    closelog();
     exit(1);
 }
 
@@ -958,7 +959,8 @@ int main(int argc, char *argv[])
         {NULL, 0, NULL, 0}
     };
 
-    openlog(LOG_IDENT, LOG_CONS || LOG_PID, LOG_USER);
+    openlog(LOG_IDENT, LOG_CONS || LOG_PID, LOG_DAEMON);
+    setlogmask(LOG_UPTO(LOG_INFO));
 
     init();
     while ((c = getopt_long(argc, argv, "c:p:bd",
@@ -987,6 +989,7 @@ int main(int argc, char *argv[])
                 break;
             case 'd':
                 opt_debug = 1;
+                setlogmask(LOG_UPTO(LOG_DEBUG));
                 syslog(LOG_INFO, "debugging mode selected");
                 break;
             default:
@@ -1027,7 +1030,7 @@ int main(int argc, char *argv[])
     }
 
     syslog(LOG_INFO, "settings: src=%s dst=%s proto=%s promisc=%s filter='%s'",
-             mirroring_source[mirroring_source_num],
+             mirroring_source[0],
              mirroring_target_if,
              opt_protocol ? "TEE" : "TZSP",
              opt_promiscuous ? "on" : "off",

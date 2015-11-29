@@ -31,7 +31,6 @@
 #define ERRTIMEOUT      20
 #define MACADDRLEN      6
 #define BUFSIZE         8192
-#define TIMEBUF         32                  /* max timestamp length RFC3339 */
 #define SNAP_LEN        65535               /* pcap snapshot length */
 
 char * getUCIItem(char* buf, char* item);
