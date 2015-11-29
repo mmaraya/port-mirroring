@@ -903,8 +903,11 @@ int fork_daemon()
     }
 
     /* If we got a good PID, then we can exit the parent process. */
-    syslog(LOG_INFO, "forked parent process with pid: %d", pid);
-    exit(EXIT_SUCCESS);
+    if (pid > 0)
+    {
+        syslog(LOG_DEBUG, "forked parent process with pid: %d", pid);
+        exit(EXIT_SUCCESS);
+    }
 
     /* Change the file mode mask */
     umask(0);
@@ -916,7 +919,6 @@ int fork_daemon()
         syslog(LOG_ERR, "unable to create new SID: '%s'", strerror(errno));
         return -1;
     }
-
     /* Change the current working directory */
     if ((chdir("/")) < 0) {
         /* Log the failure */
@@ -936,7 +938,7 @@ void sig_handler(int signum)
     {
         fprintf(stderr, "signal captured, opt_pid=[%s],signum=[%d].\n", opt_pid, signum);
     }
-    syslog(LOG_INFO, "received signal %d", signum);
+    syslog(LOG_DEBUG, "received signal %d", signum);
     if (opt_daemon && opt_pid[0] != '\0')
     {
         unlink(opt_pid);
@@ -972,7 +974,8 @@ int main(int argc, char *argv[])
                 {
                     strncpy(opt_config, optarg, OPTION_MAX);
                     opt_config[OPTION_MAX - 1] = '\0';
-                    syslog(LOG_INFO, "configuration file: '%s'", opt_config);
+                    syslog(LOG_INFO, "program starting with config file %s",
+                            opt_config);
                 }
                 break;
             case 'p':
@@ -980,17 +983,17 @@ int main(int argc, char *argv[])
                 {
                     strncpy(opt_pid, optarg, OPTION_MAX);
                     opt_pid[OPTION_MAX - 1] = '\0';
-                    syslog(LOG_INFO, "process id selected: '%s'", opt_pid);
+                    syslog(LOG_DEBUG, "process id selected: '%s'", opt_pid);
                 }
                 break;
             case 'b':
                 opt_daemon = 1;
-                syslog(LOG_INFO, "running as background proces");
+                syslog(LOG_DEBUG, "running as background proces");
                 break;
             case 'd':
                 opt_debug = 1;
                 setlogmask(LOG_UPTO(LOG_DEBUG));
-                syslog(LOG_INFO, "debugging mode selected");
+                syslog(LOG_DEBUG, "debugging mode selected");
                 break;
             default:
                 break;
@@ -1066,8 +1069,6 @@ int main(int argc, char *argv[])
 
     #endif
 
-    syslog(LOG_INFO, "exiting: %d packets mirrored", debug_packets);
-    closelog();
     return 0;
 }
 
