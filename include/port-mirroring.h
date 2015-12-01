@@ -26,24 +26,17 @@
 #define ARP_ETH_PADDING 18                  /* ARP ethernet padding         */
 #define MAX_SOURCE_IF   4                   /* maxium number of interfaces  */
 #define LINEBUF_MAX     1024
-#define OPTION_MAX      255
 #define TZSP_PORT       37008
 #define ERRTIMEOUT      20
 #define MACADDRLEN      6
 #define BUFSIZE         8192
 #define SNAP_LEN        65535               /* pcap snapshot length */
 
-char * getUCIItem(char* buf, char* item);
-
-int getUCIConf(char* buf, char* option, char* value);
-
 int loadCfg(const char* fpath);
 
 void init();
 
 int reopenSendHandle(const char* device);
-
-char * printMACStr(const char* mac);
 
 int nlmsg_ok(const struct nlmsghdr *nlh, ssize_t len);
 

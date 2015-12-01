@@ -11,8 +11,14 @@
 #ifndef PORT_MIRRORING_UTIL_H_
 #define PORT_MIRRORING_UTIL_H_
 
-#define TIMEBUF 32  /* max timestamp length RFC3339 */
+#include <stdio.h>
+#include <string.h>
 
-void now(char* buf, const size_t size);
+#define OPTION_MAX  255
+#define TIMEBUF     32  /* max timestamp length RFC3339 */
+
+char * printMACStr(const char *mac);
+char * getUCIItem(char *buf, char *item);
+int getUCIConf(char *buf, char *option, char *value);
 
 #endif  // PORT_MIRRORING_UTIL_H_
