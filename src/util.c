@@ -10,15 +10,6 @@
 
 #include "util.h"
 
-char * printMACStr(const char* mac)
-{
-    static char macStr[20]={0};
-    sprintf(macStr, "%02x%02x%02x%02x%02x%02x",
-            (unsigned char)mac[0], (unsigned char)mac[1], (unsigned char)mac[2],
-            (unsigned char)mac[3], (unsigned char)mac[4], (unsigned char)mac[5]);
-    return macStr;
-}
-
 char * getUCIItem(char *buf, char *item)
 {
     char* p1 = buf;

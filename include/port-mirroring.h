@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 #include <syslog.h>
+#include "netutil.h"
 #include "util.h"
 
 #define LOG_IDENT       "port-mirroring"    /* program name for syslog      */
@@ -28,8 +29,6 @@
 #define LINEBUF_MAX     1024
 #define TZSP_PORT       37008
 #define ERRTIMEOUT      20
-#define MACADDRLEN      6
-#define BUFSIZE         8192
 #define SNAP_LEN        65535               /* pcap snapshot length */
 
 int loadCfg(const char* fpath);
