@@ -31,34 +31,14 @@
 #define ERRTIMEOUT      20
 #define SNAP_LEN        65535               /* pcap snapshot length */
 
-int loadCfg(const char* fpath);
-
+int loadCfg(const char *fpath);
 void init();
-
-int reopenSendHandle(const char* device);
-
-int nlmsg_ok(const struct nlmsghdr *nlh, ssize_t len);
-
-int readNlSock(int sockFd, char* bufPtr, uint32_t seqNum, uint32_t pId);
-
-int getInterfaceMac(const char* device, char* mac);
-
-int getInterfaceIP(const char* device, unsigned int* ip);
-
-int getSenderInterface(unsigned int targetIP, char* device, char* mac);
-
-int getRemoteARP(unsigned int targetIP, const char* device, char* mac);
-
+int reopenSendHandle(const char *device);
 int initSendHandle();
-
-void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data);
-
-void * start_mirroring(void* dev);
-
+void packet_handler_ex(const struct pcap_pkthdr *header, const u_char *pkt_data);
+void * start_mirroring(void *dev);
 void write_pid();
-
 int fork_daemon();
-
 void sig_handler(int signum);
 
 #endif 	// PORT_MIRRORING_H_
