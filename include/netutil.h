@@ -24,8 +24,13 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define BUFSIZE     8192
-#define MACADDRLEN  6
+#define BUFSIZE         8192
+#define MACADDRLEN      6
+#define ETH_P_ARP       0x0806              /* Address Resolution packet    */
+#define ARPOP_REQUEST   1                   /* ARP request                  */
+#define ARPOP_REPLY     2                   /* ARP reply                    */
+#define ARP_WAIT_TIME   500                 /* ARP response wait time (ms)  */
+#define ARP_ETH_PADDING 18                  /* ARP ethernet padding         */
 
 int getInterfaceMac(const char *device, char *mac);
 int getInterfaceIP(const char *device, unsigned int *ip);
