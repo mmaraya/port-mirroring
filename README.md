@@ -1,4 +1,4 @@
-![port-mirroring logo](icon.svg "port-mirroring") port-mirroring [![Build Status](https://travis-ci.org/mmaraya/port-mirroring.svg?branch=master)](https://travis-ci.org/mmaraya/port-mirroring) [![Coverity Scan Build Status](https://scan.coverity.com/projects/6700/badge.svg)](https://scan.coverity.com/projects/mmaraya-port-mirroring)
+![port-mirroring logo](icon.png "port-mirroring") port-mirroring [![Build Status](https://travis-ci.org/mmaraya/port-mirroring.svg?branch=master)](https://travis-ci.org/mmaraya/port-mirroring) [![Coverity Scan Build Status](https://scan.coverity.com/projects/6700/badge.svg)](https://scan.coverity.com/projects/mmaraya-port-mirroring)
 ==============
 
 port-mirroring is an [OpenWrt](https://openwrt.org) package that sends copies of network packets from your OpenWrt router to another device on your network or beyond, giving you the ability to monitor and analyze network traffic without additional hardware. Intrusion detection systems, network application debugging, and network performance monitoring are common use cases. This is a continuation of the work started by Bruce Geng at https://code.google.com/p/port-mirroring/.
