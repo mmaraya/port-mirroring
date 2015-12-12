@@ -140,8 +140,10 @@ void addMonitoringSource(const char* s)
 {
     if (mirroring_source_num < MAX_SOURCE_IF)
     {
-        strncpy(mirroring_source[mirroring_source_num], s, OPTION_MAX);
-        mirroring_source[mirroring_source_num][OPTION_MAX - 1] = '\0'; 
+        strncpy(mirroring_source[mirroring_source_num], s, 
+                sizeof(mirroring_source[mirroring_source_num]) - 1);
+        mirroring_source[mirroring_source_num]
+                [sizeof(mirroring_source[mirroring_source_num]) - 1] = '\0'; 
         mirroring_source_num++;
     }
 }
@@ -720,8 +722,8 @@ int main(int argc, char *argv[])
             case 'c':
                 if (optarg)
                 {
-                    strncpy(opt_config, optarg, OPTION_MAX);
-                    opt_config[OPTION_MAX - 1] = '\0';
+                    strncpy(opt_config, optarg, sizeof(opt_config) - 1);
+                    opt_config[sizeof(opt_config) - 1]  = '\0';
                     syslog(LOG_INFO, "program starting with config file %s",
                             opt_config);
                 }
@@ -729,8 +731,8 @@ int main(int argc, char *argv[])
             case 'p':
                 if (optarg)
                 {
-                    strncpy(opt_pid, optarg, OPTION_MAX);
-                    opt_pid[OPTION_MAX - 1] = '\0';
+                    strncpy(opt_pid, optarg, sizeof(opt_pid) - 1);
+                    opt_pid[sizeof(opt_pid) - 1] = '\0';
                     syslog(LOG_DEBUG, "process id selected: '%s'", opt_pid);
                 }
                 break;
