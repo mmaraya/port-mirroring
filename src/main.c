@@ -53,7 +53,7 @@
 
 #pragma pack(1)
 
-#include "port-mirroring.h"
+#include "main.h"
 
 typedef struct
 {

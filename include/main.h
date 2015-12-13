@@ -13,8 +13,8 @@
 
 #include <stdint.h>
 #include <syslog.h>
-#include "netutil.h"
-#include "util.h"
+#include "config.h"
+#include "net.h"
 
 #define LOG_IDENT       "port-mirroring"    /* program name for syslog      */
 #define ETH_ALEN        6                   /* Octets in one ethernet addr  */

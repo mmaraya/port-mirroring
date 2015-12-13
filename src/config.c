@@ -8,7 +8,7 @@
  *
  */
 
-#include "util.h"
+#include "config.h"
 
 char * getUCIItem(char *buf, char *item)
 {

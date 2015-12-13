@@ -8,7 +8,7 @@
  *
  */
 
-#include "netutil.h"
+#include "net.h"
 
 char * printMACStr(const char* mac)
 {
