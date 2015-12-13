@@ -30,7 +30,7 @@ int getInterfaceMac(const char *device, char *mac)
         return -1;
     }
     memset(&buffer, 0x00, sizeof(buffer));
-    strncpy(buffer.ifr_name, device, sizeof(buffer.ifr_name));
+    strncpy(buffer.ifr_name, device, sizeof(buffer.ifr_name) - 1);
     buffer.ifr_name[sizeof(buffer.ifr_name) - 1] = '\0';
 
     if (ioctl(s, SIOCGIFHWADDR, &buffer) < 0)
@@ -59,7 +59,7 @@ int getInterfaceIP(const char *device, unsigned int *ip)
     }
     memset(&buffer, 0x00, sizeof(buffer));
     buffer.ifr_addr.sa_family = AF_INET;
-    strncpy(buffer.ifr_name, device, sizeof(buffer.ifr_name));
+    strncpy(buffer.ifr_name, device, sizeof(buffer.ifr_name) - 1);
     buffer.ifr_name[sizeof(buffer.ifr_name) - 1] = '\0';
 
     if (ioctl(s, SIOCGIFADDR, &buffer) < 0)
