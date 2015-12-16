@@ -702,6 +702,7 @@ int main(int argc, char *argv[])
 {
     int c;
     int option_index = 0;
+    struct pm_cfg pm_cfg = {0};
 
     static struct option long_options[] = {
         {"config", required_argument, 0, 'c'},
@@ -724,8 +725,11 @@ int main(int argc, char *argv[])
                 {
                     strncpy(opt_config, optarg, sizeof(opt_config) - 1);
                     opt_config[sizeof(opt_config) - 1]  = '\0';
+                    // we can remove the above two lines once we've completed
+                    // the switch to struct pm_cfg for our settings
+                    pm_cfg.cfg_file = optarg;
                     syslog(LOG_INFO, "program starting with config file %s",
-                            opt_config);
+                            pm_cfg.cfg_file);
                 }
                 break;
             case 'p':
