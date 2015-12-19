@@ -10,6 +10,20 @@
 
 #include "config.h"
 
+void find_cfg(struct pm_cfg *cfg) {
+    int i;
+    char *path[] = {cfg->cfg_file, CFG_PATH_1, CFG_PATH_2, CFG_PATH_3};
+    for (i = 0; i < 4; i++) {
+        FILE *fp = fopen(path[i], "r");
+        if (fp) {
+            cfg->cfg_file = path[i];
+            fclose(fp);
+            break;
+        }
+        fclose(fp);
+    }
+}
+
 char * getUCIItem(char *buf, char *item)
 {
     char* p1 = buf;

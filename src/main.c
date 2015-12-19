@@ -238,7 +238,6 @@ void init()
     }
     memset(senderMac, 0, MACADDRLEN);
     memset(remoteMac, 0, MACADDRLEN);
-    memset(opt_config, 0, sizeof(opt_config));
     strcpy(opt_pid, "/var/run/port-mirroring.pid");
 }
 
@@ -714,6 +713,7 @@ int main(int argc, char *argv[])
 
     openlog(LOG_IDENT, LOG_CONS || LOG_PID, LOG_DAEMON);
     setlogmask(LOG_UPTO(LOG_INFO));
+    syslog(LOG_INFO, "%s starting", LOG_IDENT);
 
     init();
     while ((c = getopt_long(argc, argv, "c:p:bd",
@@ -723,31 +723,33 @@ int main(int argc, char *argv[])
             case 'c':
                 if (optarg)
                 {
-                    strncpy(opt_config, optarg, sizeof(opt_config) - 1);
-                    opt_config[sizeof(opt_config) - 1]  = '\0';
-                    // we can remove the above two lines once we've completed
-                    // the switch to struct pm_cfg for our settings
+                    snprintf(opt_config, sizeof(opt_config), "%s", optarg);
+                    // remove above when move to struct pm_cfg is complete
                     cfg.cfg_file = optarg;
-                    syslog(LOG_INFO, "program starting with config file %s",
-                            cfg.cfg_file);
+                    syslog(LOG_INFO, "using config file: '%s'", cfg.cfg_file);
                 }
                 break;
             case 'p':
                 if (optarg)
                 {
-                    strncpy(opt_pid, optarg, sizeof(opt_pid) - 1);
-                    opt_pid[sizeof(opt_pid) - 1] = '\0';
-                    syslog(LOG_DEBUG, "process id selected: '%s'", opt_pid);
+                    snprintf(opt_pid, sizeof(opt_pid), "%s", optarg);
+                    // remove above when move to struct pm_cfg is complete
+                    cfg.pid_file = optarg;
+                    syslog(LOG_INFO, "using pid file: '%s'", cfg.pid_file);
                 }
                 break;
             case 'b':
                 opt_daemon = 1;
-                syslog(LOG_DEBUG, "running as background proces");
+                // remove above when move to struct pm_cfg is complete
+                cfg.flags |= PM_DAEMON;
+                syslog(LOG_INFO, "running as background proces");
                 break;
             case 'd':
                 opt_debug = 1;
+                // remove above when move to struct pm_cfg is complete
+                cfg.flags |= PM_DEBUG;
                 setlogmask(LOG_UPTO(LOG_DEBUG));
-                syslog(LOG_DEBUG, "debugging mode selected");
+                syslog(LOG_INFO, "debugging mode selected");
                 break;
             default:
                 break;
@@ -765,25 +767,15 @@ int main(int argc, char *argv[])
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
 
-    if (opt_config[0])
+    find_cfg(&cfg);
+    if (cfg.cfg_file && (loadCfg(cfg.cfg_file) == 0))
     {
-        if (loadCfg(opt_config) == -1)
-        {
-            syslog(LOG_ERR, "unable to open config file '%s', exiting", opt_config);
-            return -1;
-        }
-    }
+        syslog(LOG_INFO, "using config file '%s'", cfg.cfg_file);
+    } 
     else
     {
-        if (loadCfg("/etc/config/port-mirroring") == -1)
-        {
-            syslog(LOG_ERR, "unable to open config file '/etc/config/port-mirroring'");
-            if (loadCfg("/etc/port-mirroring") == -1)
-            {
-                syslog(LOG_ERR, "unable to open config file '/etc/port-mirroring', exiting");
-                return -1;
-            }
-        }
+        syslog(LOG_ERR, "unable to open config file '%s', exiting", cfg.cfg_file);
+        return -1;
     }
 
     syslog(LOG_INFO, "settings: src=%s dst=%s proto=%s promisc=%s filter='%s'",
