@@ -625,14 +625,15 @@ start_handle:
     return NULL;
 }
 
-void write_pid()
+void write_pid(struct pm_cfg *cfg)
 {
-    if (opt_daemon && opt_pid[0] != '\0')
+    if ((cfg->flags & PM_DAEMON) && cfg->pid_file[0])
     {
-        FILE* fp = fopen(opt_pid, "w");
+        FILE* fp = fopen(cfg->pid_file, "w");
         if (fp != NULL)
         {
             fprintf(fp, "%d\n", getpid());
+            syslog(LOG_INFO, "using process id %d", getpid());
             fclose(fp);
         }
     }
@@ -762,7 +763,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    write_pid();
+    write_pid(&cfg);
 
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);

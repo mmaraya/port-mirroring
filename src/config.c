@@ -18,7 +18,7 @@ void find_cfg(struct pm_cfg *cfg) {
         if (fp) {
             cfg->cfg_file = path[i];
             fclose(fp);
-            break;
+            return;
         }
         fclose(fp);
     }

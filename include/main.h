@@ -25,14 +25,14 @@
 #define ERRTIMEOUT  20                  /* seconds before timing out    */
 #define SNAP_LEN    65535               /* pcap snapshot length         */
 
-#define PM_DAEMON   2^0 /* run as background process                    */
-#define PM_DEBUG    2^1 /* display debugging messages to console        */
-#define PM_TEE      2^2 /* send packets using TEE iptables format       */
-#define PM_TZSP     2^3 /* send packets using TaZmen Sniffer Protocol   */
-#define PM_IFACE    2^4 /* destination is a network interface           */
-#define PM_IPADDR   2^5 /* destination is an internet protocol address  */
-#define PM_PROMISC  2^6 /* place source interface in promiscuous mode   */
-#define PM_SYSLOG   2^7 /* log messages to syslog facility              */
+#define PM_DAEMON   (2^0)   /* run as background process                    */
+#define PM_DEBUG    (2^1)   /* display debugging messages to console        */
+#define PM_TEE      (2^2)   /* send packets using TEE iptables format       */
+#define PM_TZSP     (2^3)   /* send packets using TaZmen Sniffer Protocol   */
+#define PM_IFACE    (2^4)   /* destination is a network interface           */
+#define PM_IPADDR   (2^5)   /* destination is an internet protocol address  */
+#define PM_PROMISC  (2^6)   /* place source interface in promiscuous mode   */
+#define PM_SYSLOG   (2^7)   /* log messages to syslog facility              */
 
 int loadCfg(const char *fpath);
 void init();
