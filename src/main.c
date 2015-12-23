@@ -757,7 +757,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (opt_daemon && fork_daemon() == -1)
+    if ((cfg.flags & PM_DAEMON) && (fork_daemon() == -1))
     {
         syslog(LOG_ERR, "unable to run as a background process, exiting");
         return -1;
