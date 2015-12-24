@@ -1,4 +1,5 @@
-/* * Copyright (c) 2015 Mike Maraya <mike[dot]maraya[at]gmail[dot]com>
+/* 
+ * Copyright (c) 2015 Mike Maraya <mike[dot]maraya[at]gmail[dot]com>
  * All rights reserved.
  *
  * This file is subject to the terms and conditions defined in
@@ -17,7 +18,7 @@
 
 #define OPTION_MAX  255
 #define TIMEBUF     32  /* max timestamp length RFC3339 */
-#define SRC_IF_MAX  4   /* maxium number of interfaces  */
+#define SRC_MAX     4   /* maxium number of interfaces  */
 
 // if no configuration file is specified, look through these in order
 #define CFG_PATH_1  "/etc/config/port-mirroring"
@@ -26,13 +27,13 @@
 
 struct pm_cfg
 {
-    char        *cfg_file;          /* path to configuration file       */
-    uint8_t     flags;              /* boolean setting bitmask          */
-    char        *src[SRC_IF_MAX];   /* source network interfaces        */
-    char        *dst_if;            /* destination network interface    */
-    in_addr_t   dst_ip;             /* destination IP address           */
-    char        *pf;                /* tcpdump packet filter expression */
-    char        *pid_file;          /* path to process id file          */
+    char        *cfg_file;      /* path to configuration file       */
+    uint8_t     flags;          /* boolean setting bitmask          */
+    char        *src[SRC_MAX];  /* source network interfaces        */
+    char        *dst_if;        /* destination network interface    */
+    in_addr_t   dst_ip;         /* destination IP address           */
+    char        *pf;            /* tcpdump packet filter expression */
+    char        *pid_file;      /* path to process id file          */
 };
 
 void find_cfg(struct pm_cfg *cfg);

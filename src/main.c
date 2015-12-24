@@ -123,7 +123,7 @@ int                 mirroring_type = 0; /* 0 - to interface, 1 - to remote ip ad
 char                mirroring_target_if[OPTION_MAX];
 unsigned int        mirroring_target_ip;
 int                 mirroring_source_num = 0;
-char                mirroring_source[SRC_IF_MAX][OPTION_MAX];
+char                mirroring_source[SRC_MAX][OPTION_MAX];
 char                mirroring_filter[OPTION_MAX];
 pcap_t              *sendHandle = NULL; //send pcap handle
 int                 sendSocket = -1;   //send raw socket
@@ -138,7 +138,7 @@ pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
 void addMonitoringSource(const char* s)
 {
-    if (mirroring_source_num < SRC_IF_MAX)
+    if (mirroring_source_num < SRC_MAX)
     {
         strncpy(mirroring_source[mirroring_source_num], s, 
                 sizeof(mirroring_source[mirroring_source_num]) - 1);
@@ -233,7 +233,7 @@ void init()
     mirroring_target_ip  = 0;
     mirroring_source_num = 0;
     memset(mirroring_filter, 0, sizeof(mirroring_filter));
-    for (i=0; i < SRC_IF_MAX; i++) {
+    for (i=0; i < SRC_MAX; i++) {
         memset(mirroring_source[i], 0, OPTION_MAX);
     }
     memset(senderMac, 0, MACADDRLEN);
