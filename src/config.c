@@ -12,15 +12,24 @@
 
 void find_cfg(struct pm_cfg *cfg) {
     int i;
+    if (cfg->flags & PM_DEBUG)
+    {
+         syslog(LOG_DEBUG, "inside find_cfg()");
+    }
     char *path[] = {cfg->cfg_file, CFG_PATH_1, CFG_PATH_2, CFG_PATH_3};
     for (i = 0; i < 4; i++) {
+        if (path[i] == NULL)
+        {
+            break;
+        }
         FILE *fp = fopen(path[i], "r");
-        if (fp) {
-            cfg->cfg_file = path[i];
+        if (fp)
+        {
+            realpath(path[i], cfg->cfg_file);
+            printf("set config file to: %s\n", cfg->cfg_file);
             fclose(fp);
             return;
         }
-        fclose(fp);
     }
 }
 

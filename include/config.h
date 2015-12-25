@@ -13,12 +13,23 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "net.h"
 
 #define OPTION_MAX  255
 #define TIMEBUF     32  /* max timestamp length RFC3339 */
 #define SRC_MAX     4   /* maxium number of interfaces  */
+
+// port-mirroring configuration bit flags
+#define PM_DAEMON   (2^0)   /* run as background process                    */
+#define PM_DEBUG    (2^1)   /* display debugging messages to console        */
+#define PM_TEE      (2^2)   /* send packets using TEE iptables format       */
+#define PM_TZSP     (2^3)   /* send packets using TaZmen Sniffer Protocol   */
+#define PM_IFACE    (2^4)   /* destination is a network interface           */
+#define PM_IPADDR   (2^5)   /* destination is an internet protocol address  */
+#define PM_PROMISC  (2^6)   /* place source interface in promiscuous mode   */
+#define PM_SYSLOG   (2^7)   /* log messages to syslog facility              */
 
 // if no configuration file is specified, look through these in order
 #define CFG_PATH_1  "/etc/config/port-mirroring"

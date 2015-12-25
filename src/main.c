@@ -53,6 +53,7 @@
 
 #pragma pack(1)
 
+#include "config.h"
 #include "main.h"
 
 typedef struct
@@ -112,7 +113,6 @@ typedef struct
 }ARPPACKET;
 
 //options:
-char                opt_config[OPTION_MAX];
 char                opt_pid[OPTION_MAX];
 int                 opt_daemon      = 0;
 int                 opt_debug       = 0;
@@ -724,8 +724,6 @@ int main(int argc, char *argv[])
             case 'c':
                 if (optarg)
                 {
-                    snprintf(opt_config, sizeof(opt_config), "%s", optarg);
-                    // remove above when move to struct pm_cfg is complete
                     cfg.cfg_file = optarg;
                     syslog(LOG_INFO, "using config file: '%s'", cfg.cfg_file);
                 }
@@ -757,17 +755,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    if ((cfg.flags & PM_DAEMON) && (fork_daemon() == -1))
-    {
-        syslog(LOG_ERR, "unable to run as a background process, exiting");
-        return -1;
-    }
-
-    write_pid(&cfg);
-
-    signal(SIGINT, sig_handler);
-    signal(SIGTERM, sig_handler);
-
     find_cfg(&cfg);
     if (cfg.cfg_file && (loadCfg(cfg.cfg_file) == 0))
     {
@@ -778,6 +765,17 @@ int main(int argc, char *argv[])
         syslog(LOG_ERR, "unable to open config file '%s', exiting", cfg.cfg_file);
         return -1;
     }
+
+    if ((cfg.flags & PM_DAEMON) && (fork_daemon() == -1))
+    {
+        syslog(LOG_ERR, "unable to run as a background process, exiting");
+        return -1;
+    }
+
+    write_pid(&cfg);
+
+    signal(SIGINT, sig_handler);
+    signal(SIGTERM, sig_handler);
 
     syslog(LOG_INFO, "settings: src=%s dst=%s proto=%s promisc=%s filter='%s'",
              mirroring_source[0],
