@@ -220,7 +220,6 @@ int loadCfg(const char *fpath)
     }
 
     fclose(fp);
-    syslog(LOG_INFO, "using configuration file: %s", fpath);
     return 0;
 }
 
@@ -700,9 +699,8 @@ void sig_handler(int signum)
 
 int main(int argc, char *argv[])
 {
-    int c;
-    int option_index = 0;
     struct pm_cfg cfg;
+    int c = 0, i = 0, option_index = 0;
 
     static struct option long_options[] = {
         {"config", required_argument, 0, 'c'},
@@ -716,6 +714,10 @@ int main(int argc, char *argv[])
     setlogmask(LOG_UPTO(LOG_INFO));
     syslog(LOG_INFO, "%s starting", LOG_IDENT);
 
+    for (i = 0; i < argc; i++) {
+        syslog(LOG_INFO, "command-line arg[%d]: %s", i, argv[i]);
+    } 
+
     init();
     while ((c = getopt_long(argc, argv, "c:p:bd",
                             long_options, &option_index)) != -1) {
@@ -725,7 +727,7 @@ int main(int argc, char *argv[])
                 if (optarg)
                 {
                     cfg.cfg_file = optarg;
-                    syslog(LOG_INFO, "using config file: '%s'", cfg.cfg_file);
+                    syslog(LOG_INFO, "arg: cfg file: '%s'", cfg.cfg_file);
                 }
                 break;
             case 'p':
@@ -734,21 +736,21 @@ int main(int argc, char *argv[])
                     snprintf(opt_pid, sizeof(opt_pid), "%s", optarg);
                     // remove above when move to struct pm_cfg is complete
                     cfg.pid_file = optarg;
-                    syslog(LOG_INFO, "using pid file: '%s'", cfg.pid_file);
+                    syslog(LOG_INFO, "arg: pid file: '%s'", cfg.pid_file);
                 }
                 break;
             case 'b':
                 opt_daemon = 1;
                 // remove above when move to struct pm_cfg is complete
                 cfg.flags |= PM_DAEMON;
-                syslog(LOG_INFO, "running as background proces");
+                syslog(LOG_INFO, "arg: running as background proces");
                 break;
             case 'd':
                 opt_debug = 1;
                 // remove above when move to struct pm_cfg is complete
                 cfg.flags |= PM_DEBUG;
                 setlogmask(LOG_UPTO(LOG_DEBUG));
-                syslog(LOG_INFO, "debugging mode selected");
+                syslog(LOG_INFO, "arg: debugging mode selected");
                 break;
             default:
                 break;
