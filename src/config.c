@@ -10,40 +10,47 @@
 
 #include "config.h"
 
-void find_cfg(struct pm_cfg *cfg) {
+void find_cfg(struct pm_cfg *cfg)
+{
     int i;
-    if (cfg->flags & PM_DEBUG)
-    {
-         syslog(LOG_DEBUG, "inside find_cfg()");
-    }
-    char *path[] = {cfg->cfg_file, CFG_PATH_1, CFG_PATH_2, CFG_PATH_3};
+    char *path[] = {
+        cfg->cfg_file, CFG_PATH_1, CFG_PATH_2, CFG_PATH_3
+    };
+
     for (i = 0; i < 4; i++) {
         if (path[i] == NULL)
         {
             break;
         }
-        FILE *fp = fopen(path[i], "r");
+        FILE *fp  = fopen(path[i], "r");
+        int   err = errno;
         if (fp)
         {
-            realpath(path[i], cfg->cfg_file);
-            printf("set config file to: %s\n", cfg->cfg_file);
+            char *expanded = realpath(path[i], NULL);
+            snprintf(cfg->cfg_file, PATH_MAX, "%s", expanded);
+            free(expanded);
+            syslog(LOG_DEBUG, "using configuration file %s", cfg->cfg_file);
             fclose(fp);
             return;
+        }
+        else
+        {
+            syslog(LOG_DEBUG, "trying %s: %s", path[i], strerror(err));
         }
     }
 }
 
 char * getUCIItem(char *buf, char *item)
 {
-    char* p1 = buf;
-    char* p2;
+    char *p1 = buf;
+    char *p2;
     while (*p1 == '\t' || *p1 == ' ') {
         p1++;
     }
     if (*p1 == '\'' || *p1 == '"')
     {
         char delim = *p1++;
-        p2    = strchr(p1, delim);
+        p2 = strchr(p1, delim);
     }
     else
     {
@@ -68,7 +75,7 @@ char * getUCIItem(char *buf, char *item)
 
 int getUCIConf(char *buf, char *option, char *value)
 {
-    char* p = strstr(buf, "option");
+    char *p = strstr(buf, "option");
 
     if (p != NULL)
     {

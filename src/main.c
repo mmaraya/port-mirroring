@@ -714,9 +714,9 @@ int main(int argc, char *argv[])
     setlogmask(LOG_UPTO(LOG_INFO));
     syslog(LOG_INFO, "%s starting", LOG_IDENT);
 
-    for (i = 0; i < argc; i++)
+    for (i = 1; i < argc; i++)
     {
-        syslog(LOG_INFO, "command-line arg[%d]: %s", i, argv[i]);
+        syslog(LOG_INFO, "command-line argument[%d]: %s", i, argv[i]);
     }
 
     init();
@@ -728,8 +728,7 @@ int main(int argc, char *argv[])
             case 'c':
                 if (optarg)
                 {
-                    cfg.cfg_file = optarg;
-                    syslog(LOG_DEBUG, "arg: cfg file: '%s'", cfg.cfg_file);
+                    snprintf(cfg.cfg_file, sizeof(cfg.cfg_file), "%s", optarg);
                 }
                 break;
             case 'p':
@@ -737,22 +736,20 @@ int main(int argc, char *argv[])
                 {
                     snprintf(opt_pid, sizeof(opt_pid), "%s", optarg);
                     // remove above when move to struct pm_cfg is complete
-                    cfg.pid_file = optarg;
-                    syslog(LOG_DEBUG, "arg: pid file: '%s'", cfg.pid_file);
+                    snprintf(cfg.pid_file, sizeof(cfg.pid_file), "%s", optarg);
                 }
                 break;
             case 'b':
                 opt_daemon = 1;
                 // remove above when move to struct pm_cfg is complete
                 cfg.flags |= PM_DAEMON;
-                syslog(LOG_DEBUG, "arg: running as background proces");
                 break;
             case 'd':
                 opt_debug = 1;
                 // remove above when move to struct pm_cfg is complete
                 cfg.flags |= PM_DEBUG;
                 setlogmask(LOG_UPTO(LOG_DEBUG));
-                syslog(LOG_DEBUG, "arg: debugging mode selected");
+                syslog(LOG_DEBUG, "debugging mode selected");
                 break;
             default:
                 break;

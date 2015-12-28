@@ -15,11 +15,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <linux/limits.h>
 #include "net.h"
 
-#define OPTION_MAX  255     /* max value for program options        */
-#define TIMEBUF     32      /* max timestamp length RFC3339         */
-#define SRC_MAX     4       /* maxium number of source interfaces   */
+#define OPTION_MAX  254     /* max value for program options                */
+#define TIMEBUF     32      /* max timestamp length RFC3339                 */
+#define SRC_MAX     4       /* maxium number of source network interfaces   */
+#define PFE_MAX     80      /* maximum length of packet filter expression   */
 
 // port-mirroring configuration bit flags
 #define PM_DAEMON   0x01    /* run as background process                    */
@@ -38,13 +40,13 @@
 
 struct pm_cfg
 {
-    char        *cfg_file;      /* path to configuration file       */
-    uint8_t     flags;          /* boolean setting bitmask          */
-    char        *src[SRC_MAX];  /* source network interfaces        */
-    char        *dst_if;        /* destination network interface    */
-    in_addr_t   dst_ip;         /* destination IP address           */
-    char        *pf;            /* tcpdump packet filter expression */
-    char        *pid_file;      /* path to process id file          */
+    char        cfg_file[PATH_MAX];     /* path to configuration file       */
+    uint8_t     flags;                  /* boolean setting bitmask          */
+    char        src[SRC_MAX][IFNAMSIZ]; /* source network interfaces        */
+    char        dst_if[IFNAMSIZ];       /* destination network interface    */
+    in_addr_t   dst_ip;                 /* destination IP address           */
+    char        pf[PFE_MAX];            /* tcpdump packet filter expression */
+    char        pid_file[PATH_MAX];     /* path to process id file          */
 };
 
 void find_cfg(struct pm_cfg *cfg);
