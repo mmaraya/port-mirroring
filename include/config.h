@@ -38,15 +38,19 @@
 #define CFG_PATH_2  "/etc/port-mirroring"
 #define CFG_PATH_3  "port-mirroring.conf"
 
+// default program id file
+#define PID_PATH    "/var/run/port-mirroring.pid"
+
+// program-wide configuration settings
 struct pm_cfg
 {
-    char        cfg_file[PATH_MAX];     /* path to configuration file       */
-    uint8_t     flags;                  /* boolean setting bitmask          */
-    char        src[SRC_MAX][IFNAMSIZ]; /* source network interfaces        */
-    char        dst_if[IFNAMSIZ];       /* destination network interface    */
-    in_addr_t   dst_ip;                 /* destination IP address           */
-    char        pf[PFE_MAX];            /* tcpdump packet filter expression */
-    char        pid_file[PATH_MAX];     /* path to process id file          */
+    char        *cfg_file;      /* path to configuration file       */
+    uint8_t     flags;          /* boolean setting bitmask          */
+    char        **src;          /* source network interfaces        */
+    char        *dst_if;        /* destination network interface    */
+    in_addr_t   dst_ip;         /* destination IP address           */
+    char        *pf;            /* tcpdump packet filter expression */
+    char        *pid_file;      /* path to process id file          */
 };
 
 void find_cfg(struct pm_cfg *cfg);

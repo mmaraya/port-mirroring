@@ -112,8 +112,9 @@ typedef struct
     ARPHDR arphdr;
 }ARPPACKET;
 
+struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
+
 //options:
-char                opt_pid[OPTION_MAX];
 int                 opt_daemon      = 0;
 int                 opt_debug       = 0;
 int                 opt_promiscuous = 0;
@@ -223,21 +224,59 @@ int loadCfg(const char *fpath)
     return 0;
 }
 
-void init()
+/*
+ * Initialize program-wide configuration settings 
+ */
+int init()
 {
-    int i;
+    cfg.cfg_file = calloc(PATH_MAX, sizeof(char));
+    if (cfg.cfg_file == NULL)
+    {
+        syslog(LOG_ERR, "unable to allocate memory for configuration path");
+        return -1;
+    }
+    cfg.flags = 0x00;
+    cfg.src = calloc(SRC_MAX * IFNAMSIZ, sizeof(char));
+    if (cfg.src == NULL)
+    {
+        syslog(LOG_ERR, "unable to allocate memory for source inteface(s)");
+        return -1;
+    }
+    cfg.dst_if = calloc(IFNAMSIZ, sizeof(char));
+    if (cfg.dst_if == NULL)
+    {
+        syslog(LOG_ERR, "unable to allocate memory for destination interface");
+        return -1;
+    }
+    cfg.dst_ip = INADDR_LOOPBACK;
+    cfg.pf = calloc(PFE_MAX, sizeof(char));
+    if (cfg.pf == NULL)
+    {
+        syslog(LOG_ERR, "unable to allocate memory for packet filter expr");
+        return -1;
+    }
+    cfg.pid_file = calloc(PATH_MAX, sizeof(char));
+    if (cfg.pid_file == NULL)
+    {
+        syslog(LOG_ERR, "unable to allocate memory for process id path");
+        return -1;
+    }
+    snprintf(cfg.pid_file, PATH_MAX, "%s", PID_PATH); 
 
     mirroring_type = 0;     /* 0 - to interface, 1 - to remote ip address */
     memset(mirroring_target_if, 0, sizeof(mirroring_target_if));
     mirroring_target_ip  = 0;
     mirroring_source_num = 0;
     memset(mirroring_filter, 0, sizeof(mirroring_filter));
+    
+    int i;
     for (i=0; i < SRC_MAX; i++) {
         memset(mirroring_source[i], 0, OPTION_MAX);
     }
     memset(senderMac, 0, MACADDRLEN);
     memset(remoteMac, 0, MACADDRLEN);
-    strcpy(opt_pid, "/var/run/port-mirroring.pid");
+
+    return 0;
 }
 
 int reopenSendHandle(const char* device)
@@ -624,20 +663,6 @@ start_handle:
     return NULL;
 }
 
-void write_pid(struct pm_cfg *cfg)
-{
-    if ((cfg->flags & PM_DAEMON) && cfg->pid_file[0])
-    {
-        FILE* fp = fopen(cfg->pid_file, "w");
-        if (fp != NULL)
-        {
-            fprintf(fp, "%d\n", getpid());
-            syslog(LOG_INFO, "using process id %d", getpid());
-            fclose(fp);
-        }
-    }
-}
-
 int fork_daemon()
 {
     /* Our process ID and Session ID */
@@ -685,12 +710,13 @@ void sig_handler(int signum)
 {
     if (opt_debug)
     {
-        fprintf(stderr, "signal captured, opt_pid=[%s],signum=[%d].\n", opt_pid, signum);
+        fprintf(stderr, "signal captured, pid_file=[%s],signum=[%d].\n", 
+            cfg.pid_file, signum);
     }
     syslog(LOG_DEBUG, "received signal %d", signum);
-    if (opt_daemon && opt_pid[0] != '\0')
+    if (opt_daemon && cfg.pid_file[0] != '\0')
     {
-        unlink(opt_pid);
+        unlink(cfg.pid_file);
     }
     syslog(LOG_INFO, "program exiting: %d packets mirrored", debug_packets);
     closelog();
@@ -699,9 +725,27 @@ void sig_handler(int signum)
 
 int main(int argc, char *argv[])
 {
-    struct pm_cfg cfg;
-    int c = 0, i = 0, option_index = 0;
+    // start logging at the INFO level 
+    openlog(LOG_IDENT, LOG_CONS || LOG_PID, LOG_DAEMON);
+    setlogmask(LOG_UPTO(LOG_INFO));
+    syslog(LOG_INFO, "%s starting", LOG_IDENT);
 
+    // initialize program-wide configuration settings
+    if (init() != 0)
+    {
+        syslog(LOG_ERR, "unable to initialize settings, exiting");
+        return -1;
+    }
+    
+    // log command-line arguments
+    int i; 
+    for (i = 1; i < argc; i++)
+    {
+        syslog(LOG_INFO, "command-line argument[%d]: %s", i, argv[i]);
+    }
+
+    // parse command-line arguments
+    int c = 0, option_index = 0;
     static struct option long_options[] = {
         {"config", required_argument, 0, 'c'},
         {"pid", required_argument, 0, 'p'},
@@ -709,18 +753,6 @@ int main(int argc, char *argv[])
         {"debug", no_argument, 0, 'd' },
         {NULL, 0, NULL, 0}
     };
-
-    openlog(LOG_IDENT, LOG_CONS || LOG_PID, LOG_DAEMON);
-    setlogmask(LOG_UPTO(LOG_INFO));
-    syslog(LOG_INFO, "%s starting", LOG_IDENT);
-
-    for (i = 1; i < argc; i++)
-    {
-        syslog(LOG_INFO, "command-line argument[%d]: %s", i, argv[i]);
-    }
-
-    init();
-    
     while ((c = getopt_long(argc, argv, "c:p:bd",
                             long_options, &option_index)) != -1) {
         switch (c)
@@ -728,15 +760,13 @@ int main(int argc, char *argv[])
             case 'c':
                 if (optarg)
                 {
-                    snprintf(cfg.cfg_file, sizeof(cfg.cfg_file), "%s", optarg);
+                    snprintf(cfg.cfg_file, PATH_MAX, "%s", optarg);
                 }
                 break;
             case 'p':
                 if (optarg)
                 {
-                    snprintf(opt_pid, sizeof(opt_pid), "%s", optarg);
-                    // remove above when move to struct pm_cfg is complete
-                    snprintf(cfg.pid_file, sizeof(cfg.pid_file), "%s", optarg);
+                    snprintf(cfg.pid_file, PATH_MAX, "%s", optarg);
                 }
                 break;
             case 'b':
@@ -756,24 +786,44 @@ int main(int argc, char *argv[])
         }
     }
 
+    // locate the configuration file to use  
     find_cfg(&cfg);
-    if (cfg.cfg_file && (loadCfg(cfg.cfg_file) == 0))
+    if (cfg.cfg_file == NULL)
     {
-        syslog(LOG_INFO, "using config file '%s'", cfg.cfg_file);
-    } 
-    else
-    {
-        syslog(LOG_ERR, "unable to open config file '%s', exiting", cfg.cfg_file);
+        syslog(LOG_ERR, "could not locate a configuration file, exiting");
         return -1;
     }
 
-    if ((cfg.flags & PM_DAEMON) && (fork_daemon() == -1))
+    // read and parse the configuration file 
+    if (loadCfg(cfg.cfg_file) == 0)
+    {
+        syslog(LOG_INFO, "successfully read config file '%s'", cfg.cfg_file);
+        free(cfg.cfg_file);
+    } 
+    else
+    {
+        syslog(LOG_ERR, "unable to read config file '%s', exiting", cfg.cfg_file);
+        return -1;
+    }
+
+    // run as a background process if selected 
+    if ((cfg.flags & PM_DAEMON) && (fork_daemon() != 0))
     {
         syslog(LOG_ERR, "unable to run as a background process, exiting");
         return -1;
     }
 
-    write_pid(&cfg);
+    // create the process id file
+    if (cfg.flags & PM_DAEMON)
+    {
+        FILE* fp = fopen(cfg.pid_file, "w");
+        if (fp != NULL)
+        {
+            fprintf(fp, "%d\n", getpid());
+            syslog(LOG_INFO, "using process id %d", getpid());
+            fclose(fp);
+        }
+    }
 
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);

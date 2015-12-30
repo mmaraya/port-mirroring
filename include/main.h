@@ -26,7 +26,7 @@
 #define SNAP_LEN    65535               /* pcap snapshot length         */
 
 int loadCfg(const char *fpath);
-void init();
+int init();
 int reopenSendHandle(const char *device);
 int initSendHandle();
 void packet_handler_ex(const struct pcap_pkthdr *header, const u_char *pkt_data);

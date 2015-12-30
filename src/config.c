@@ -12,11 +12,11 @@
 
 void find_cfg(struct pm_cfg *cfg)
 {
-    int i;
     char *path[] = {
         cfg->cfg_file, CFG_PATH_1, CFG_PATH_2, CFG_PATH_3
     };
 
+    int i;
     for (i = 0; i < 4; i++) {
         if (path[i] == NULL)
         {
