@@ -773,6 +773,7 @@ int main(int argc, char *argv[])
                 opt_daemon = 1;
                 // remove above when move to struct pm_cfg is complete
                 cfg.flags |= PM_DAEMON;
+                syslog(LOG_INFO, "background process mode selected"); 
                 break;
             case 'd':
                 opt_debug = 1;
