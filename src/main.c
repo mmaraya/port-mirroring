@@ -115,7 +115,6 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-int                 opt_daemon      = 0;
 int                 opt_debug       = 0;
 int                 opt_promiscuous = 0;
 int                 opt_protocol    = 1;   //0 - TZSP, 1 - TEE
@@ -714,7 +713,7 @@ void sig_handler(int signum)
             cfg.pid_file, signum);
     }
     syslog(LOG_DEBUG, "received signal %d", signum);
-    if (opt_daemon && cfg.pid_file[0] != '\0')
+    if ((cfg.flags & PM_DAEMON) && cfg.pid_file[0] != '\0')
     {
         unlink(cfg.pid_file);
     }
@@ -770,8 +769,6 @@ int main(int argc, char *argv[])
                 }
                 break;
             case 'b':
-                opt_daemon = 1;
-                // remove above when move to struct pm_cfg is complete
                 cfg.flags |= PM_DAEMON;
                 syslog(LOG_INFO, "background process mode selected"); 
                 break;
