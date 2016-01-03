@@ -115,7 +115,6 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-int                 opt_debug       = 0;
 int                 opt_promiscuous = 0;
 int                 opt_protocol    = 1;   //0 - TZSP, 1 - TEE
 int                 debug_packets = 0;
@@ -358,7 +357,7 @@ int getRemoteARP(unsigned int targetIP, const char *device, char *mac)
                 {
                     memcpy(mac, (const char *)p->ethhdr.h_source, ETH_ALEN);
                     found = 0;
-                    if (opt_debug)
+                    if (cfg.flags & PM_DEBUG)
                     {
                         syslog(LOG_INFO, "ARP reply on '%s'['%s'] filter '%s'",
                                  device,
@@ -470,7 +469,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
             time(&nowTime);
             if (nowTime - tLastInit > ERRTIMEOUT && header->len < 1500)
             {
-                if (opt_debug)
+                if (cfg.flags & PM_DEBUG)
                 {
                     if (sendHandle != NULL)
                     {
@@ -500,7 +499,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
                 time(&nowTime);
                 if (nowTime - tLastInit > ERRTIMEOUT && header->len < 1500)
                 {
-                    if (opt_debug)
+                    if (cfg.flags & PM_DEBUG)
                     {
                         if (sendHandle != NULL)
                         {
@@ -707,7 +706,7 @@ int fork_daemon()
 
 void sig_handler(int signum)
 {
-    if (opt_debug)
+    if (cfg.flags & PM_DEBUG)
     {
         fprintf(stderr, "signal captured, pid_file=[%s],signum=[%d].\n", 
             cfg.pid_file, signum);
@@ -766,6 +765,7 @@ int main(int argc, char *argv[])
                 if (optarg)
                 {
                     snprintf(cfg.pid_file, PATH_MAX, "%s", optarg);
+                    syslog(LOG_INFO, "process pid file %s selected", cfg.pid_file); 
                 }
                 break;
             case 'b':
@@ -773,11 +773,9 @@ int main(int argc, char *argv[])
                 syslog(LOG_INFO, "background process mode selected"); 
                 break;
             case 'd':
-                opt_debug = 1;
-                // remove above when move to struct pm_cfg is complete
                 cfg.flags |= PM_DEBUG;
                 setlogmask(LOG_UPTO(LOG_DEBUG));
-                syslog(LOG_DEBUG, "debugging mode selected");
+                syslog(LOG_INFO, "debugging mode selected");
                 break;
             default:
                 break;
