@@ -234,11 +234,15 @@ int init()
         return -1;
     }
     cfg.flags = 0x00;
-    cfg.src = calloc(SRC_MAX * IFNAMSIZ, sizeof(char));
-    if (cfg.src == NULL)
+    int i;
+    for (i = 0; i < SRC_MAX; i++)
     {
-        syslog(LOG_ERR, "unable to allocate memory for source inteface(s)");
-        return -1;
+        cfg.src[i] = calloc(IFNAMSIZ, sizeof(char)); 
+        if (cfg.src == NULL)
+        {
+            syslog(LOG_ERR, "unable to allocate memory for source inteface(s)");
+            return -1;
+        }
     }
     cfg.dst_if = calloc(IFNAMSIZ, sizeof(char));
     if (cfg.dst_if == NULL)
@@ -267,8 +271,7 @@ int init()
     mirroring_source_num = 0;
     memset(mirroring_filter, 0, sizeof(mirroring_filter));
     
-    int i;
-    for (i=0; i < SRC_MAX; i++) {
+    for (i = 0; i < SRC_MAX; i++) {
         memset(mirroring_source[i], 0, OPTION_MAX);
     }
     memset(senderMac, 0, MACADDRLEN);
