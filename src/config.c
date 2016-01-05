@@ -63,8 +63,7 @@ char * getUCIItem(char *buf, char *item)
     if (p2 != NULL)
     {
         *p2 = '\0';
-        strncpy(item, p1, strlen(item) - 1);
-        item[sizeof(item) - 1] = '\0';
+        snprintf(item, OPTION_MAX, "%s", p1);
         return p2 + 1;
     }
     else
