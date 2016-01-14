@@ -116,7 +116,6 @@ struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
 int                 opt_promiscuous = 0;
-int                 opt_protocol    = 1;   //0 - TZSP, 1 - TEE
 int                 debug_packets = 0;
 int                 mirroring_type = 0; /* 0 - to interface, 1 - to remote ip address */
 char                mirroring_target_if[OPTION_MAX];
@@ -201,17 +200,9 @@ int loadCfg(const char *fpath)
             }
             else if (strcmp(option, "protocol") == 0)
             {
-                if (strcmp(value, "TEE") == 0)
+                if (strcasecmp(value, "TZSP") == 0)
                 {
-                    opt_protocol = 1;
-                }
-                else if (strcmp(value, "TZSP") == 0)
-                {
-                    opt_protocol = 0;
-                }
-                else
-                {
-                    syslog(LOG_ERR, "protocol '%s' unknown, use 'TEE' or 'TZSP'", value);
+                    cfg.flags |= PM_TZSP;
                 }
             }
         }
@@ -404,7 +395,7 @@ int initSendHandle()
 
     if (mirroring_type == 1)
     {
-        if (opt_protocol == 0)
+        if (cfg.flags & PM_TZSP)
         {
             /* TZSP format */
             int sendBufSize = SNAP_LEN;
@@ -424,7 +415,7 @@ int initSendHandle()
             sendSocket_sa.sin_addr.s_addr = mirroring_target_ip;
         }
 
-        if (opt_protocol == 1)
+        if (!(cfg.flags & PM_TZSP))
         {
             /* TEE format */
             char device[IF_NAMESIZE] = {0};
@@ -487,7 +478,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
             }
         }
     }
-    else if (opt_protocol == 1)
+    else if (!(cfg.flags & PM_TZSP))
     {
         //TEE
         if (memcmp(pkt_data, remoteMac, MACADDRLEN))
@@ -522,7 +513,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
             //ignore packets sent to the remote mac address
         }
     }
-    else if (opt_protocol == 0)
+    else if (cfg.flags & PM_TZSP)
     {
         //TSZP
         if (header->len > 14 + sizeof(IP_HEADER))
@@ -830,7 +821,7 @@ int main(int argc, char *argv[])
     syslog(LOG_INFO, "settings: src=%s dst=%s proto=%s promisc=%s filter='%s'",
              mirroring_source[0],
              mirroring_target_if,
-             opt_protocol ? "TEE" : "TZSP",
+             cfg.flags & PM_TZSP ? "TZSP" : "TEE",
              opt_promiscuous ? "on" : "off",
              mirroring_filter);
 
