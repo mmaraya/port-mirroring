@@ -40,6 +40,7 @@ The last command will install the package and start it as a background process u
 ```
 config 'port-mirroring'
     option source_ports 'eth0,wlan0'    # interface(s) to copy packets from
+    option promiscuous  '1'             # put source interface(s) in promiscuous mode
     option target       '10.1.4.2'      # interface or IP address to send packets to
     option protocol     'TEE'           # 'TEE' iptables or 'TZSP' TaZmen Sniffer Protocol 
     option filter       ''              # optional tcpdump/libpcap packet filter expressions
