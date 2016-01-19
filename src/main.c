@@ -115,7 +115,6 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-int                 opt_promiscuous = 0;
 int                 debug_packets = 0;
 int                 mirroring_type = 0; /* 0 - to interface, 1 - to remote ip address */
 char                mirroring_target_if[OPTION_MAX];
@@ -195,7 +194,7 @@ int loadCfg(const char *fpath)
             {
                 if (atoi(value) == 1)
                 {
-                    opt_promiscuous = 1;
+                    cfg.flags |= PM_PROMISC;
                 }
             }
             else if (strcmp(option, "protocol") == 0)
@@ -606,7 +605,7 @@ void * start_mirroring(void* dev)
 #endif
 
 start_handle:
-    handle = pcap_open_live((const char *)dev, SNAP_LEN, opt_promiscuous, 100, errbuf);
+    handle = pcap_open_live((const char *)dev, SNAP_LEN, cfg.flags & PM_PROMISC, 100, errbuf);
     if (handle == NULL)
     {
         syslog(LOG_ERR, "unable to open target device '%s': %s", (const char *) dev, errbuf);
@@ -822,7 +821,7 @@ int main(int argc, char *argv[])
              mirroring_source[0],
              mirroring_target_if,
              cfg.flags & PM_TZSP ? "TZSP" : "TEE",
-             opt_promiscuous ? "on" : "off",
+             cfg.flags & PM_PROMISC ? "on" : "off",
              mirroring_filter);
 
     if (initSendHandle() != 0)
