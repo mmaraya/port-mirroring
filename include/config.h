@@ -40,7 +40,7 @@
 // default program id file
 #define PID_PATH    "/var/run/port-mirroring.pid"
 
-// program-wide configuration settings
+// program-wide configuration settings and variables
 struct pm_cfg
 {
     char        *cfg_file;      /* path to configuration file       */
@@ -50,6 +50,7 @@ struct pm_cfg
     in_addr_t   dst_ip;         /* destination IP address           */
     char        *pf;            /* tcpdump packet filter expression */
     char        *pid_file;      /* path to process id file          */
+    int         packet_count;   /* number of packets processed      */
 };
 
 void find_cfg(struct pm_cfg *cfg);

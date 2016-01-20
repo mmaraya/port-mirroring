@@ -115,7 +115,6 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-int                 debug_packets = 0;
 int                 mirroring_type = 0; /* 0 - to interface, 1 - to remote ip address */
 char                mirroring_target_if[OPTION_MAX];
 unsigned int        mirroring_target_ip;
@@ -253,7 +252,8 @@ int init()
         syslog(LOG_ERR, "unable to allocate memory for process id path");
         return -1;
     }
-    snprintf(cfg.pid_file, PATH_MAX, "%s", PID_PATH); 
+    snprintf(cfg.pid_file, PATH_MAX, "%s", PID_PATH);
+    cfg.packet_count = 0;
 
     mirroring_type = 0;     /* 0 - to interface, 1 - to remote ip address */
     memset(mirroring_target_if, 0, sizeof(mirroring_target_if));
@@ -585,7 +585,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
     pthread_mutex_unlock(&mutex1);
     #endif
 
-    debug_packets++;
+    cfg.packet_count++;
 }
 
 void * start_mirroring(void* dev)
@@ -709,7 +709,7 @@ void sig_handler(int signum)
     {
         unlink(cfg.pid_file);
     }
-    syslog(LOG_INFO, "program exiting: %d packets mirrored", debug_packets);
+    syslog(LOG_INFO, "program exiting: %d packets mirrored", cfg.packet_count);
     closelog();
     exit(1);
 }
