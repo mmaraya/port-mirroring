@@ -39,10 +39,10 @@ root@OpenWrt:~# opkg install port-mirroring_1.4.2_ar71xx.ipk
 The last command will install the package and start it as a background process using the default configuration file. The default settings will probably not work on your environment, so the program should exit right after starting. Modify the `/etc/config/port-mirroring` file to suit your environment.
 ```
 config 'port-mirroring'
-    option source_ports 'eth0,wlan0'    # interface(s) to copy packets from
+    option source_ports 'eth0,wlan0'    # interfaces (maximum of 4) to copy packets from
     option promiscuous  '1'             # put source interface(s) in promiscuous mode
     option target       '10.1.4.2'      # interface or IP address to send packets to
-    option protocol     'TEE'           # 'TEE' iptables or 'TZSP' TaZmen Sniffer Protocol 
+    option protocol     'TEE'           # 'TEE' iptables (default) or 'TZSP' TaZmen Sniffer Protocol 
     option filter       ''              # optional tcpdump/libpcap packet filter expressions
 ```
 To start port-mirroring as a foreground process with debugging on:
