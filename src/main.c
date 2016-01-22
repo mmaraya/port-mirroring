@@ -118,7 +118,6 @@ struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 int                 mirroring_type = 0; /* 0 - to interface, 1 - to remote ip address */
 char                mirroring_target_if[OPTION_MAX];
 unsigned int        mirroring_target_ip;
-int                 mirroring_source_num = 0;
 char                mirroring_source[SRC_MAX][OPTION_MAX];
 char                mirroring_filter[OPTION_MAX];
 pcap_t              *sendHandle = NULL; //send pcap handle
@@ -131,18 +130,6 @@ time_t              tLastInit = 0;
 #ifdef  _ENABLE_THREADS
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 #endif
-
-void addMonitoringSource(const char* s)
-{
-    if (mirroring_source_num < SRC_MAX)
-    {
-        strncpy(mirroring_source[mirroring_source_num], s, 
-                sizeof(mirroring_source[mirroring_source_num]) - 1);
-        mirroring_source[mirroring_source_num]
-                [sizeof(mirroring_source[mirroring_source_num]) - 1] = '\0'; 
-        mirroring_source_num++;
-    }
-}
 
 int loadCfg(const char *fpath)
 {
@@ -181,7 +168,8 @@ int loadCfg(const char *fpath)
             {
                 char* token = strtok(value, ",");
                 while (token != NULL) {
-                    addMonitoringSource(token);
+                    snprintf(mirroring_source[cfg.src_count++], OPTION_MAX,
+                            "%s", token);
                     token = strtok(NULL, ",");
                 }
             }
@@ -253,12 +241,12 @@ int init()
         return -1;
     }
     snprintf(cfg.pid_file, PATH_MAX, "%s", PID_PATH);
+    cfg.src_count = 0;
     cfg.packet_count = 0;
 
     mirroring_type = 0;     /* 0 - to interface, 1 - to remote ip address */
     memset(mirroring_target_if, 0, sizeof(mirroring_target_if));
     mirroring_target_ip  = 0;
-    mirroring_source_num = 0;
     memset(mirroring_filter, 0, sizeof(mirroring_filter));
     
     for (i = 0; i < SRC_MAX; i++) {
@@ -817,12 +805,15 @@ int main(int argc, char *argv[])
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
 
-    syslog(LOG_INFO, "settings: src=%s dst=%s proto=%s promisc=%s filter='%s'",
-             mirroring_source[0],
-             mirroring_target_if,
-             cfg.flags & PM_TZSP ? "TZSP" : "TEE",
-             cfg.flags & PM_PROMISC ? "on" : "off",
-             mirroring_filter);
+    for (i = 0; i < cfg.src_count; i++)
+    {
+        syslog(LOG_INFO, "settings: src=%s dst=%s proto=%s promisc=%s filter='%s'",
+                mirroring_source[i],
+                mirroring_target_if,
+                cfg.flags & PM_TZSP ? "TZSP" : "TEE",
+                cfg.flags & PM_PROMISC ? "on" : "off",
+                mirroring_filter);
+    }
 
     if (initSendHandle() != 0)
     {

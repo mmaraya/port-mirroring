@@ -50,6 +50,7 @@ struct pm_cfg
     in_addr_t   dst_ip;         /* destination IP address           */
     char        *pf;            /* tcpdump packet filter expression */
     char        *pid_file;      /* path to process id file          */
+    int         src_count;      /* number of source ports           */ 
     int         packet_count;   /* number of packets processed      */
 };
 
