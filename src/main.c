@@ -118,7 +118,6 @@ struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 int                 mirroring_type = 0; /* 0 - to interface, 1 - to remote ip address */
 char                mirroring_target_if[OPTION_MAX];
 unsigned int        mirroring_target_ip;
-char                mirroring_source[SRC_MAX][OPTION_MAX];
 char                mirroring_filter[OPTION_MAX];
 pcap_t              *sendHandle = NULL; //send pcap handle
 int                 sendSocket = -1;   //send raw socket
@@ -168,8 +167,7 @@ int loadCfg(const char *fpath)
             {
                 char* token = strtok(value, ",");
                 while (token != NULL) {
-                    snprintf(mirroring_source[cfg.src_count++], OPTION_MAX,
-                            "%s", token);
+                    snprintf(cfg.src[cfg.src_count++], IFNAMSIZ, "%s", token);
                     token = strtok(NULL, ",");
                 }
             }
@@ -249,9 +247,6 @@ int init()
     mirroring_target_ip  = 0;
     memset(mirroring_filter, 0, sizeof(mirroring_filter));
     
-    for (i = 0; i < SRC_MAX; i++) {
-        memset(mirroring_source[i], 0, OPTION_MAX);
-    }
     memset(senderMac, 0, MACADDRLEN);
     memset(remoteMac, 0, MACADDRLEN);
 
@@ -808,7 +803,7 @@ int main(int argc, char *argv[])
     for (i = 0; i < cfg.src_count; i++)
     {
         syslog(LOG_INFO, "settings: src=%s dst=%s proto=%s promisc=%s filter='%s'",
-                mirroring_source[i],
+                cfg.src[i],
                 mirroring_target_if,
                 cfg.flags & PM_TZSP ? "TZSP" : "TEE",
                 cfg.flags & PM_PROMISC ? "on" : "off",
@@ -822,15 +817,15 @@ int main(int argc, char *argv[])
     }
     #ifdef  _ENABLE_THREADS
     int i;
-    for (i = 0; i < mirroring_source_num; i++) {
-        if (mirroring_type == 0 && strcmp(mirroring_target_if, mirroring_source[i]) == 0)
+    for (i = 0; i < cfg.src_count; i++) {
+        if (mirroring_type == 0 && strcmp(mirroring_target_if, cfg.src[i]) == 0)
         {
             syslog(LOG_INFO, "src %s ignored", mirroring_target_if);
         }
         else
         {
             pthread_t thread1;
-            pthread_create(&thread1, NULL, start_mirroring, (void *) mirroring_source[i]);
+            pthread_create(&thread1, NULL, start_mirroring, (void *) cfg.src[i]);
             pthread_join(thread1, NULL);
         }
     }
@@ -841,7 +836,7 @@ int main(int argc, char *argv[])
     #else
 
     syslog(LOG_INFO, "POSIX threads unavailable, running single-threaded");
-    start_mirroring(mirroring_source[0]);
+    start_mirroring(cfg.src[0]);
 
     #endif
 
