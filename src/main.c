@@ -209,16 +209,6 @@ int init()
         return -1;
     }
     cfg.flags = 0x00;
-    int i;
-    for (i = 0; i < SRC_MAX; i++)
-    {
-        cfg.src[i] = calloc(IFNAMSIZ, sizeof(char)); 
-        if (cfg.src == NULL)
-        {
-            syslog(LOG_ERR, "unable to allocate memory for source inteface(s)");
-            return -1;
-        }
-    }
     cfg.dst_if = calloc(IFNAMSIZ, sizeof(char));
     if (cfg.dst_if == NULL)
     {
