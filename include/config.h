@@ -46,7 +46,7 @@ struct pm_cfg
     char        *cfg_file;              /* path to configuration file       */
     uint8_t     flags;                  /* boolean setting bitmask          */
     char        src[SRC_MAX][IFNAMSIZ]; /* source network interfaces        */
-    char        *dst_if;                /* destination network interface    */
+    char        dst_if[IFNAMSIZ];       /* destination network interface    */
     in_addr_t   dst_ip;                 /* destination IP address           */
     char        *pf;                    /* tcpdump packet filter expression */
     char        *pid_file;              /* path to process id file          */

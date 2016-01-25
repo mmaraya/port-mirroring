@@ -209,12 +209,6 @@ int init()
         return -1;
     }
     cfg.flags = 0x00;
-    cfg.dst_if = calloc(IFNAMSIZ, sizeof(char));
-    if (cfg.dst_if == NULL)
-    {
-        syslog(LOG_ERR, "unable to allocate memory for destination interface");
-        return -1;
-    }
     cfg.dst_ip = INADDR_LOOPBACK;
     cfg.pf = calloc(PFE_MAX, sizeof(char));
     if (cfg.pf == NULL)
