@@ -27,8 +27,8 @@
 #define PM_DAEMON   0x01    /* run as background process                    */
 #define PM_DEBUG    0x02    /* display debugging messages to console        */
 #define PM_TZSP     0x04    /* send packets using TaZmen Sniffer Protocol   */
-#define PM_IFACE    0x08    /* destination is a network interface           */
-#define PM_IPADDR   0x0F    /* destination is an internet protocol address  */
+#define PM_DST_IF   0x08    /* destination is a network interface           */
+#define PM_DST_IP   0x0F    /* destination is an internet protocol address  */
 #define PM_PROMISC  0x10    /* place source interface in promiscuous mode   */
 #define PM_SYSLOG   0x20    /* log messages to syslog facility              */
 
