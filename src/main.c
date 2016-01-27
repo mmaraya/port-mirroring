@@ -115,7 +115,7 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-int                 mirroring_type = 0; /* 0 - to interface, 1 - to remote ip address */
+//int                 mirroring_type = 0; /* 0 - to interface, 1 - to remote ip address */
 char                mirroring_target_if[OPTION_MAX];
 unsigned int        mirroring_target_ip;
 char                mirroring_filter[OPTION_MAX];
@@ -154,12 +154,12 @@ int loadCfg(const char *fpath)
                 strcpy(mirroring_target_if, value);
                 if (inet_addr(value) != INADDR_NONE)
                 {
-                    mirroring_type      = 1;
+                    cfg.flags |= PM_DST_IP;
                     mirroring_target_ip = inet_addr(value);
                 }
                 else
                 {
-                    mirroring_type = 0;
+                    cfg.flags |= PM_DST_IF;
                     strcpy(mirroring_target_if, value);
                 }
             }
@@ -226,7 +226,6 @@ int init()
     cfg.src_count = 0;
     cfg.packet_count = 0;
 
-    mirroring_type = 0;     /* 0 - to interface, 1 - to remote ip address */
     memset(mirroring_target_if, 0, sizeof(mirroring_target_if));
     mirroring_target_ip  = 0;
     memset(mirroring_filter, 0, sizeof(mirroring_filter));
@@ -354,12 +353,12 @@ int initSendHandle()
 {
     time(&tLastInit);
 
-    if (mirroring_type == 0)
+    if (cfg.flags & PM_DST_IF)
     {
         reopenSendHandle(mirroring_target_if);
     }
 
-    if (mirroring_type == 1)
+    if (cfg.flags & PM_DST_IP)
     {
         if (cfg.flags & PM_TZSP)
         {
@@ -420,7 +419,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
     pthread_mutex_lock(&mutex1);
     #endif
 
-    if (mirroring_type == 0)
+    if (cfg.flags & PM_DST_IF)
     {
         if (sendHandle == NULL || pcap_sendpacket(sendHandle, pkt_data, header->len) != 0)
         {
@@ -802,7 +801,7 @@ int main(int argc, char *argv[])
     #ifdef  _ENABLE_THREADS
     int i;
     for (i = 0; i < cfg.src_count; i++) {
-        if (mirroring_type == 0 && strcmp(mirroring_target_if, cfg.src[i]) == 0)
+        if ((cfg.flags & PM_DST_IF) && strcmp(mirroring_target_if, cfg.src[i]) == 0)
         {
             syslog(LOG_INFO, "src %s ignored", mirroring_target_if);
         }
