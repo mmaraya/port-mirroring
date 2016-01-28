@@ -115,7 +115,6 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-//int                 mirroring_type = 0; /* 0 - to interface, 1 - to remote ip address */
 char                mirroring_target_if[OPTION_MAX];
 unsigned int        mirroring_target_ip;
 char                mirroring_filter[OPTION_MAX];
