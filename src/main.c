@@ -115,7 +115,6 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-char                mirroring_target_if[OPTION_MAX];
 unsigned int        mirroring_target_ip;
 char                mirroring_filter[OPTION_MAX];
 pcap_t              *sendHandle = NULL; //send pcap handle
@@ -150,7 +149,7 @@ int loadCfg(const char *fpath)
         {
             if (strcmp(option, "target") == 0)
             {
-                strcpy(mirroring_target_if, value);
+                strcpy(cfg.dst_if, value);
                 if (inet_addr(value) != INADDR_NONE)
                 {
                     cfg.flags |= PM_DST_IP;
@@ -159,7 +158,7 @@ int loadCfg(const char *fpath)
                 else
                 {
                     cfg.flags |= PM_DST_IF;
-                    strcpy(mirroring_target_if, value);
+                    strcpy(cfg.dst_if, value);
                 }
             }
             else if (strcmp(option, "source_ports") == 0)
@@ -208,6 +207,7 @@ int init()
         return -1;
     }
     cfg.flags = 0x00;
+    memset(cfg.dst_if, 0, IFNAMSIZ);
     cfg.dst_ip = INADDR_LOOPBACK;
     cfg.pf = calloc(PFE_MAX, sizeof(char));
     if (cfg.pf == NULL)
@@ -225,7 +225,6 @@ int init()
     cfg.src_count = 0;
     cfg.packet_count = 0;
 
-    memset(mirroring_target_if, 0, sizeof(mirroring_target_if));
     mirroring_target_ip  = 0;
     memset(mirroring_filter, 0, sizeof(mirroring_filter));
     
@@ -240,13 +239,13 @@ int reopenSendHandle(const char* device)
     char errbuf[PCAP_ERRBUF_SIZE] = {0};
     if (sendHandle != NULL)
     {
-        syslog(LOG_DEBUG, "re-opening target device '%s'", mirroring_target_if);
+        syslog(LOG_DEBUG, "re-opening target device '%s'", cfg.dst_if);
         pcap_close(sendHandle);
     }
     sendHandle = pcap_open_live(device, SNAP_LEN, 0, 100, errbuf);
     if (sendHandle == NULL)
     {
-        syslog(LOG_ERR, "could not open target device '%s': %s", mirroring_target_if, errbuf);
+        syslog(LOG_ERR, "could not open target device '%s': %s", cfg.dst_if, errbuf);
         return -1;
     }
     else
@@ -354,7 +353,7 @@ int initSendHandle()
 
     if (cfg.flags & PM_DST_IF)
     {
-        reopenSendHandle(mirroring_target_if);
+        reopenSendHandle(cfg.dst_if);
     }
 
     if (cfg.flags & PM_DST_IP)
@@ -786,7 +785,7 @@ int main(int argc, char *argv[])
     {
         syslog(LOG_INFO, "settings: src=%s dst=%s proto=%s promisc=%s filter='%s'",
                 cfg.src[i],
-                mirroring_target_if,
+                cfg.dst_if,
                 cfg.flags & PM_TZSP ? "TZSP" : "TEE",
                 cfg.flags & PM_PROMISC ? "on" : "off",
                 mirroring_filter);
@@ -800,9 +799,9 @@ int main(int argc, char *argv[])
     #ifdef  _ENABLE_THREADS
     int i;
     for (i = 0; i < cfg.src_count; i++) {
-        if ((cfg.flags & PM_DST_IF) && strcmp(mirroring_target_if, cfg.src[i]) == 0)
+        if ((cfg.flags & PM_DST_IF) && strcmp(cfg.dst_if, cfg.src[i]) == 0)
         {
-            syslog(LOG_INFO, "src %s ignored", mirroring_target_if);
+            syslog(LOG_INFO, "src %s ignored", cfg.dst_if);
         }
         else
         {
