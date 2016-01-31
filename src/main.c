@@ -208,7 +208,7 @@ int init()
     }
     cfg.flags = 0x00;
     memset(cfg.dst_if, 0, IFNAMSIZ);
-    cfg.dst_ip = INADDR_LOOPBACK;
+    cfg.dst_ip = INADDR_NONE;
     cfg.pf = calloc(PFE_MAX, sizeof(char));
     if (cfg.pf == NULL)
     {
