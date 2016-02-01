@@ -115,7 +115,6 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-unsigned int        mirroring_target_ip;
 char                mirroring_filter[OPTION_MAX];
 pcap_t              *sendHandle = NULL; //send pcap handle
 int                 sendSocket = -1;   //send raw socket
@@ -153,7 +152,7 @@ int loadCfg(const char *fpath)
                 if (inet_addr(value) != INADDR_NONE)
                 {
                     cfg.flags |= PM_DST_IP;
-                    mirroring_target_ip = inet_addr(value);
+                    cfg.dst_ip = inet_addr(value);
                 }
                 else
                 {
@@ -225,7 +224,7 @@ int init()
     cfg.src_count = 0;
     cfg.packet_count = 0;
 
-    mirroring_target_ip  = 0;
+    cfg.dst_ip  = 0;
     memset(mirroring_filter, 0, sizeof(mirroring_filter));
     
     memset(senderMac, 0, MACADDRLEN);
@@ -375,16 +374,16 @@ int initSendHandle()
             }
             sendSocket_sa.sin_family      = AF_INET;
             sendSocket_sa.sin_port        = htons(TZSP_PORT);
-            sendSocket_sa.sin_addr.s_addr = mirroring_target_ip;
+            sendSocket_sa.sin_addr.s_addr = cfg.dst_ip;
         }
 
         if (!(cfg.flags & PM_TZSP))
         {
             /* TEE format */
             char device[IF_NAMESIZE] = {0};
-            if (getSenderInterface(mirroring_target_ip, device, senderMac) == 0)
+            if (getSenderInterface(cfg.dst_ip, device, senderMac) == 0)
             {
-                if (getRemoteARP(mirroring_target_ip, device, remoteMac) == 0)
+                if (getRemoteARP(cfg.dst_ip, device, remoteMac) == 0)
                 {
                     reopenSendHandle(device);
                 }
@@ -497,7 +496,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
                 #endif
                 return;
             }
-            if (pIPHead != NULL && pIPHead->destIP == mirroring_target_ip && pIPHead->proto == IPPROTO_UDP)
+            if (pIPHead != NULL && pIPHead->destIP == cfg.dst_ip && pIPHead->proto == IPPROTO_UDP)
             {
                 UDP_HEADER* pUDPHead = (UDP_HEADER * )((u_char *)pIPHead + sizeof(unsigned long) * (pIPHead->h_lenver & 0xf));
                 //printf("iphlen=[%d], dport=[%u], TSZP=[%u].\n", sizeof(unsigned long) * ( pIPHead->h_lenver & 0xf), pUDPHead->uh_dport, htons(TZSP_PORT));
