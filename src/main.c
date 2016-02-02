@@ -224,7 +224,6 @@ int init()
     cfg.src_count = 0;
     cfg.packet_count = 0;
 
-    cfg.dst_ip  = 0;
     memset(mirroring_filter, 0, sizeof(mirroring_filter));
     
     memset(senderMac, 0, MACADDRLEN);
