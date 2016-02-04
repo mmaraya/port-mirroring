@@ -48,7 +48,7 @@ struct pm_cfg
     char        src[SRC_MAX][IFNAMSIZ]; /* source network interfaces        */
     char        dst_if[IFNAMSIZ];       /* destination network interface    */
     in_addr_t   dst_ip;                 /* destination IP address           */
-    char        pf[PFE_MAX];            /* tcpdump packet filter expression */
+    char        pfe[PFE_MAX];           /* tcpdump packet filter expression */
     char        *pid_file;              /* path to process id file          */
     int         src_count;              /* number of source ports           */
     int         packet_count;           /* number of packets processed      */

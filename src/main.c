@@ -115,7 +115,6 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-char                mirroring_filter[OPTION_MAX];
 pcap_t              *sendHandle = NULL; //send pcap handle
 int                 sendSocket = -1;   //send raw socket
 struct sockaddr_in  sendSocket_sa;
@@ -170,7 +169,7 @@ int loadCfg(const char *fpath)
             }
             else if (strcmp(option, "filter") == 0)
             {
-                strcpy(mirroring_filter, value);
+                strcpy(cfg.pfe, value);
             }
             else if (strcmp(option, "promiscuous") == 0)
             {
@@ -208,12 +207,7 @@ int init()
     cfg.flags = 0x00;
     memset(cfg.dst_if, 0, IFNAMSIZ);
     cfg.dst_ip = INADDR_NONE;
-    cfg.pf = calloc(PFE_MAX, sizeof(char));
-    if (cfg.pf == NULL)
-    {
-        syslog(LOG_ERR, "unable to allocate memory for packet filter expr");
-        return -1;
-    }
+    memset(cfg.pfe, 0, PFE_MAX);
     cfg.pid_file = calloc(PATH_MAX, sizeof(char));
     if (cfg.pid_file == NULL)
     {
@@ -223,8 +217,6 @@ int init()
     snprintf(cfg.pid_file, PATH_MAX, "%s", PID_PATH);
     cfg.src_count = 0;
     cfg.packet_count = 0;
-
-    memset(mirroring_filter, 0, sizeof(mirroring_filter));
     
     memset(senderMac, 0, MACADDRLEN);
     memset(remoteMac, 0, MACADDRLEN);
@@ -574,17 +566,17 @@ start_handle:
         return NULL;
     }
 
-    if (mirroring_filter[0] != '\0')
+    if (cfg.pfe[0] != '\0')
     {
-        if (pcap_compile(handle, &fp, mirroring_filter, 0, 0) == -1)
+        if (pcap_compile(handle, &fp, cfg.pfe, 0, 0) == -1)
         {
-            syslog(LOG_ERR, "unable to parse filter '%s': '%s'", mirroring_filter, pcap_geterr(handle));
+            syslog(LOG_ERR, "unable to parse filter '%s': '%s'", cfg.pfe, pcap_geterr(handle));
             pcap_close(handle);
             return NULL;
         }
         if (pcap_setfilter(handle, &fp) == -1)
         {
-            syslog(LOG_ERR, "unable to set filter '%s': '%s'", mirroring_filter, pcap_geterr(handle));
+            syslog(LOG_ERR, "unable to set filter '%s': '%s'", cfg.pfe, pcap_geterr(handle));
             pcap_close(handle);
             return NULL;
         }
@@ -786,7 +778,7 @@ int main(int argc, char *argv[])
                 cfg.dst_if,
                 cfg.flags & PM_TZSP ? "TZSP" : "TEE",
                 cfg.flags & PM_PROMISC ? "on" : "off",
-                mirroring_filter);
+                cfg.pfe);
     }
 
     if (initSendHandle() != 0)
