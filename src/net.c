@@ -151,7 +151,7 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
                     if (getInterfaceMac(ifName, mac) == 0)
                     {
                         close(sock);
-                        strcpy(device, ifName);
+                        snprintf(device, IFNAMSIZ, "%s", ifName);
                         syslog(LOG_INFO, "sending from device '%s' with MAC address '%s'",
                                 device,
                                 printMACStr(mac));

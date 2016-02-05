@@ -147,16 +147,15 @@ int loadCfg(const char *fpath)
         {
             if (strcmp(option, "target") == 0)
             {
-                strcpy(cfg.dst_if, value);
-                if (inet_addr(value) != INADDR_NONE)
+                cfg.dst_ip = inet_addr(value);
+                if (cfg.dst_ip != INADDR_NONE)
                 {
                     cfg.flags |= PM_DST_IP;
-                    cfg.dst_ip = inet_addr(value);
                 }
                 else
                 {
+                    snprintf(cfg.dst_if, IFNAMSIZ, "%s", value);
                     cfg.flags |= PM_DST_IF;
-                    strcpy(cfg.dst_if, value);
                 }
             }
             else if (strcmp(option, "source_ports") == 0)
@@ -169,7 +168,7 @@ int loadCfg(const char *fpath)
             }
             else if (strcmp(option, "filter") == 0)
             {
-                strcpy(cfg.pfe, value);
+                snprintf(cfg.pfe, PFE_MAX, "%s", value);
             }
             else if (strcmp(option, "promiscuous") == 0)
             {
