@@ -115,7 +115,6 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-pcap_t              *sendHandle = NULL; //send pcap handle
 int                 sendSocket = -1;   //send raw socket
 struct sockaddr_in  sendSocket_sa;
 char                senderMac[MACADDRLEN];
@@ -216,23 +215,23 @@ int init()
     snprintf(cfg.pid_file, PATH_MAX, "%s", PID_PATH);
     cfg.src_count = 0;
     cfg.packet_count = 0;
-    
+
     memset(senderMac, 0, MACADDRLEN);
     memset(remoteMac, 0, MACADDRLEN);
 
     return 0;
 }
 
-int reopenSendHandle(const char* device)
+int reopenSendHandle(const char* device, pcap_t *handle)
 {
     char errbuf[PCAP_ERRBUF_SIZE] = {0};
-    if (sendHandle != NULL)
+    if (handle != NULL)
     {
         syslog(LOG_DEBUG, "re-opening target device '%s'", cfg.dst_if);
-        pcap_close(sendHandle);
+        pcap_close(handle);
     }
-    sendHandle = pcap_open_live(device, SNAP_LEN, 0, 100, errbuf);
-    if (sendHandle == NULL)
+    handle = pcap_open_live(device, SNAP_LEN, 0, 100, errbuf);
+    if (handle == NULL)
     {
         syslog(LOG_ERR, "could not open target device '%s': %s", cfg.dst_if, errbuf);
         return -1;
@@ -336,13 +335,13 @@ int getRemoteARP(unsigned int targetIP, const char *device, char *mac)
     return found;
 }
 
-int initSendHandle()
+int initSendHandle(pcap_t *handle)
 {
     time(&tLastInit);
 
     if (cfg.flags & PM_DST_IF)
     {
-        reopenSendHandle(cfg.dst_if);
+        reopenSendHandle(cfg.dst_if, handle);
     }
 
     if (cfg.flags & PM_DST_IP)
@@ -375,7 +374,7 @@ int initSendHandle()
             {
                 if (getRemoteARP(cfg.dst_ip, device, remoteMac) == 0)
                 {
-                    reopenSendHandle(device);
+                    reopenSendHandle(device, handle);
                 }
                 else
                 {
@@ -394,7 +393,7 @@ int initSendHandle()
     return 0;
 }
 
-void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
+void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data, pcap_t *handle)
 {
     static uint8_t buf[2048];
 
@@ -408,7 +407,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
 
     if (cfg.flags & PM_DST_IF)
     {
-        if (sendHandle == NULL || pcap_sendpacket(sendHandle, pkt_data, header->len) != 0)
+        if (handle == NULL || pcap_sendpacket(handle, pkt_data, header->len) != 0)
         {
             //error detected
             long nowTime;
@@ -417,16 +416,16 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
             {
                 if (cfg.flags & PM_DEBUG)
                 {
-                    if (sendHandle != NULL)
+                    if (handle != NULL)
                     {
-                        syslog(LOG_ERR, "error sending packet: '%s'", pcap_geterr(sendHandle));
+                        syslog(LOG_ERR, "error sending packet: '%s'", pcap_geterr(handle));
                     }
                     else
                     {
                         syslog(LOG_ERR, "sendHandle is NULL");
                     }
                 }
-                initSendHandle();
+                initSendHandle(handle);
             }
         }
     }
@@ -438,7 +437,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
             memcpy(buf, remoteMac, MACADDRLEN);
             memcpy(buf + MACADDRLEN, senderMac, MACADDRLEN);
             memcpy(buf + 2 * MACADDRLEN, pkt_data + 2 * MACADDRLEN, header->len - 2 * MACADDRLEN);
-            if (sendHandle == NULL || pcap_sendpacket(sendHandle, buf, header->len) != 0)
+            if (handle == NULL || pcap_sendpacket(handle, buf, header->len) != 0)
             {
                 //error detected
                 long nowTime;
@@ -447,16 +446,16 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data)
                 {
                     if (cfg.flags & PM_DEBUG)
                     {
-                        if (sendHandle != NULL)
+                        if (handle != NULL)
                         {
-                            syslog(LOG_ERR, "unable to send TEE packet: '%s'", pcap_geterr(sendHandle));
+                            syslog(LOG_ERR, "unable to send TEE packet: '%s'", pcap_geterr(handle));
                         }
                         else
                         {
-                            syslog(LOG_ERR, "sendHandle is null");
+                            syslog(LOG_ERR, "handle is null");
                         }
                     }
-                    initSendHandle();
+                    initSendHandle(handle);
                 }
             }
         }
@@ -585,7 +584,7 @@ start_handle:
         res = pcap_next_ex(handle, &header, &pkt_data);
         if (res > 0)
         {
-            packet_handler_ex(header, pkt_data);
+            packet_handler_ex(header, pkt_data, handle);
         }
         else if (res == 0)              // Timeout elapsed
         {
@@ -780,7 +779,8 @@ int main(int argc, char *argv[])
                 cfg.pfe);
     }
 
-    if (initSendHandle() != 0)
+    pcap_t *handle = NULL;
+    if (initSendHandle(handle) != 0)
     {
         sig_handler(SIGTERM);
         return -1;
