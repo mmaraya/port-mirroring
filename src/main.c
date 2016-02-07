@@ -115,7 +115,6 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-int                 sendSocket = -1;   //send raw socket
 struct sockaddr_in  sendSocket_sa;
 char                senderMac[MACADDRLEN];
 char                remoteMac[MACADDRLEN];
@@ -335,7 +334,7 @@ int getRemoteARP(unsigned int targetIP, const char *device, char *mac)
     return found;
 }
 
-int initSendHandle(pcap_t *handle)
+int initSendHandle(pcap_t *handle, int *sock)
 {
     time(&tLastInit);
 
@@ -350,13 +349,13 @@ int initSendHandle(pcap_t *handle)
         {
             /* TZSP format */
             int sendBufSize = SNAP_LEN;
-            sendSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-            if (sendSocket == -1)
+            *sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+            if (*sock == -1)
             {
                 syslog(LOG_ERR, "unable to create socket: '%s'", strerror(errno));
                 return -1;
             }
-            if (setsockopt(sendSocket, SOL_SOCKET, SO_SNDBUF, (char *)&sendBufSize, sizeof(sendBufSize)))
+            if (setsockopt(*sock, SOL_SOCKET, SO_SNDBUF, (char *)&sendBufSize, sizeof(sendBufSize)))
             {
                 syslog(LOG_ERR, "unable to set socket options: '%s'", strerror(errno));
                 return -1;
@@ -393,7 +392,7 @@ int initSendHandle(pcap_t *handle)
     return 0;
 }
 
-void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data, pcap_t *handle)
+void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data, pcap_t *handle, int *sock)
 {
     static uint8_t buf[2048];
 
@@ -425,7 +424,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data,
                         syslog(LOG_ERR, "sendHandle is NULL");
                     }
                 }
-                initSendHandle(handle);
+                initSendHandle(handle, sock);
             }
         }
     }
@@ -455,7 +454,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data,
                             syslog(LOG_ERR, "handle is null");
                         }
                     }
-                    initSendHandle(handle);
+                    initSendHandle(handle, sock);
                 }
             }
         }
@@ -498,7 +497,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data,
                     return;
                 }
             }
-            if (sendSocket != -1)
+            if (*sock != -1)
             {
                 TZSP_HEAD* pHead = (TZSP_HEAD *)buf;
                 int        dataLen;
@@ -518,7 +517,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data,
                 if (dataLen > 0)
                 {
                     memcpy(buf + sizeof(TZSP_HEAD), pkt_data, dataLen);
-                    while (sendto(sendSocket, buf, dataLen + sizeof(TZSP_HEAD), 0, (struct sockaddr *)&sendSocket_sa, sizeof(sendSocket_sa)) < 0) {
+                    while (sendto(*sock, buf, dataLen + sizeof(TZSP_HEAD), 0, (struct sockaddr *)&sendSocket_sa, sizeof(sendSocket_sa)) < 0) {
                         if (errno == EINTR || errno == EWOULDBLOCK)
                         {
                             //printf("packet_handler_ex, send failed, ERRNO is EINTR or EWOULDBLOCK.\n");
@@ -540,7 +539,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data,
     cfg.packet_count++;
 }
 
-void * start_mirroring(void* dev)
+void * start_mirroring(void *dev, int *sock)
 {
     pcap_t*             handle;                   /* Session handle */
     char                errbuf[PCAP_ERRBUF_SIZE]; /* Error string */
@@ -584,7 +583,7 @@ start_handle:
         res = pcap_next_ex(handle, &header, &pkt_data);
         if (res > 0)
         {
-            packet_handler_ex(header, pkt_data, handle);
+            packet_handler_ex(header, pkt_data, handle, sock);
         }
         else if (res == 0)              // Timeout elapsed
         {
@@ -779,8 +778,9 @@ int main(int argc, char *argv[])
                 cfg.pfe);
     }
 
+    int    sock = -1;
     pcap_t *handle = NULL;
-    if (initSendHandle(handle) != 0)
+    if (initSendHandle(handle, &sock) != 0)
     {
         sig_handler(SIGTERM);
         return -1;
@@ -806,7 +806,7 @@ int main(int argc, char *argv[])
     #else
 
     syslog(LOG_INFO, "POSIX threads unavailable, running single-threaded");
-    start_mirroring(cfg.src[0]);
+    start_mirroring(cfg.src[0], &sock);
 
     #endif
 

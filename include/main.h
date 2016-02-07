@@ -30,8 +30,8 @@ int init();
 int reopenSendHandle(const char *device, pcap_t *handle);
 int initSendHandle();
 void packet_handler_ex(const struct pcap_pkthdr *header,
-                        const u_char *pkt_data, pcap_t *handle);
-void * start_mirroring(void *dev);
+                        const u_char *pkt_data, pcap_t *handle, int *sock);
+void * start_mirroring(void *dev, int *sock);
 void write_pid();
 int fork_daemon();
 void sig_handler(int signum);
