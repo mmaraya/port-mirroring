@@ -115,7 +115,7 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-struct sockaddr_in  sendSocket_sa;
+//struct sockaddr_in  sendSocket_sa;
 char                senderMac[MACADDRLEN];
 char                remoteMac[MACADDRLEN];
 time_t              tLastInit = 0;
@@ -360,9 +360,6 @@ int initSendHandle(pcap_t *handle, int *sock)
                 syslog(LOG_ERR, "unable to set socket options: '%s'", strerror(errno));
                 return -1;
             }
-            sendSocket_sa.sin_family      = AF_INET;
-            sendSocket_sa.sin_port        = htons(TZSP_PORT);
-            sendSocket_sa.sin_addr.s_addr = cfg.dst_ip;
         }
 
         if (!(cfg.flags & PM_TZSP))
@@ -392,7 +389,8 @@ int initSendHandle(pcap_t *handle, int *sock)
     return 0;
 }
 
-void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data, pcap_t *handle, int *sock)
+void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data,
+                        pcap_t *handle, int *sock)
 {
     static uint8_t buf[2048];
 
@@ -502,6 +500,11 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data,
                 TZSP_HEAD* pHead = (TZSP_HEAD *)buf;
                 int        dataLen;
 
+                struct sockaddr_in sa;
+                sa.sin_family      = AF_INET;
+                sa.sin_port        = htons(TZSP_PORT);
+                sa.sin_addr.s_addr = cfg.dst_ip;
+
                 pHead->ver    = 0x01;
                 pHead->type   = 0x00;
                 pHead->proto  = htons(0x01);
@@ -517,7 +520,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data,
                 if (dataLen > 0)
                 {
                     memcpy(buf + sizeof(TZSP_HEAD), pkt_data, dataLen);
-                    while (sendto(*sock, buf, dataLen + sizeof(TZSP_HEAD), 0, (struct sockaddr *)&sendSocket_sa, sizeof(sendSocket_sa)) < 0) {
+                    while (sendto(*sock, buf, dataLen + sizeof(TZSP_HEAD), 0, (struct sockaddr *)&sa, sizeof(sa)) < 0) {
                         if (errno == EINTR || errno == EWOULDBLOCK)
                         {
                             //printf("packet_handler_ex, send failed, ERRNO is EINTR or EWOULDBLOCK.\n");
