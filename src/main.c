@@ -115,7 +115,6 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-//struct sockaddr_in  sendSocket_sa;
 char                senderMac[MACADDRLEN];
 char                remoteMac[MACADDRLEN];
 time_t              tLastInit = 0;
