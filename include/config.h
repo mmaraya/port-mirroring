@@ -51,6 +51,7 @@ struct pm_cfg
     char        pfe[PFE_MAX];           /* tcpdump packet filter expression */
     char        *pid_file;              /* path to process id file          */
     int         src_count;              /* number of source ports           */
+    char        src_mac[MACADDRLEN];    /* source MAC address               */
     int         packet_count;           /* number of packets processed      */
 };
 

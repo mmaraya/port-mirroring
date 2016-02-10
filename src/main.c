@@ -115,7 +115,6 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-char                senderMac[MACADDRLEN];
 char                remoteMac[MACADDRLEN];
 time_t              tLastInit = 0;
 
@@ -212,9 +211,9 @@ int init()
     }
     snprintf(cfg.pid_file, PATH_MAX, "%s", PID_PATH);
     cfg.src_count = 0;
+    memset(cfg.src_mac, 0, MACADDRLEN);
     cfg.packet_count = 0;
 
-    memset(senderMac, 0, MACADDRLEN);
     memset(remoteMac, 0, MACADDRLEN);
 
     return 0;
@@ -277,8 +276,8 @@ int getRemoteARP(unsigned int targetIP, const char *device, char *mac)
     arp.arphdr.ar_op   = htons(ARPOP_REQUEST);  // Opcode: request (0x0001)
     memset(arp.arphdr.ar_tha, 0, ETH_ALEN);
     arp.arphdr.ar_tip = targetIP;
-    memcpy(arp.ethhdr.h_source, senderMac, ETH_ALEN);
-    memcpy(arp.arphdr.ar_sha, senderMac, ETH_ALEN);
+    memcpy(arp.ethhdr.h_source, cfg.src_mac, ETH_ALEN);
+    memcpy(arp.arphdr.ar_sha, cfg.src_mac, ETH_ALEN);
     arp.arphdr.ar_sip = localIP;
 
     addr.s_addr = targetIP;
@@ -365,7 +364,7 @@ int initSendHandle(pcap_t *handle, int *sock)
         {
             /* TEE format */
             char device[IF_NAMESIZE] = {0};
-            if (getSenderInterface(cfg.dst_ip, device, senderMac) == 0)
+            if (getSenderInterface(cfg.dst_ip, device, cfg.src_mac) == 0)
             {
                 if (getRemoteARP(cfg.dst_ip, device, remoteMac) == 0)
                 {
@@ -431,7 +430,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data,
         if (memcmp(pkt_data, remoteMac, MACADDRLEN))
         {
             memcpy(buf, remoteMac, MACADDRLEN);
-            memcpy(buf + MACADDRLEN, senderMac, MACADDRLEN);
+            memcpy(buf + MACADDRLEN, cfg.src_mac, MACADDRLEN);
             memcpy(buf + 2 * MACADDRLEN, pkt_data + 2 * MACADDRLEN, header->len - 2 * MACADDRLEN);
             if (handle == NULL || pcap_sendpacket(handle, buf, header->len) != 0)
             {
