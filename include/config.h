@@ -52,6 +52,7 @@ struct pm_cfg
     char        *pid_file;              /* path to process id file          */
     int         src_count;              /* number of source ports           */
     char        src_mac[MACADDRLEN];    /* source MAC address               */
+    char        dst_mac[MACADDRLEN];    /* destination MAC address          */
     int         packet_count;           /* number of packets processed      */
 };
 

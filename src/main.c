@@ -115,7 +115,6 @@ typedef struct
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 //options:
-char                remoteMac[MACADDRLEN];
 time_t              tLastInit = 0;
 
 #ifdef  _ENABLE_THREADS
@@ -212,9 +211,8 @@ int init()
     snprintf(cfg.pid_file, PATH_MAX, "%s", PID_PATH);
     cfg.src_count = 0;
     memset(cfg.src_mac, 0, MACADDRLEN);
+    memset(cfg.dst_mac, 0, MACADDRLEN);
     cfg.packet_count = 0;
-
-    memset(remoteMac, 0, MACADDRLEN);
 
     return 0;
 }
@@ -366,7 +364,7 @@ int initSendHandle(pcap_t *handle, int *sock)
             char device[IF_NAMESIZE] = {0};
             if (getSenderInterface(cfg.dst_ip, device, cfg.src_mac) == 0)
             {
-                if (getRemoteARP(cfg.dst_ip, device, remoteMac) == 0)
+                if (getRemoteARP(cfg.dst_ip, device, cfg.dst_mac) == 0)
                 {
                     reopenSendHandle(device, handle);
                 }
@@ -427,9 +425,9 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data,
     else if (!(cfg.flags & PM_TZSP))
     {
         //TEE
-        if (memcmp(pkt_data, remoteMac, MACADDRLEN))
+        if (memcmp(pkt_data, cfg.dst_mac, MACADDRLEN))
         {
-            memcpy(buf, remoteMac, MACADDRLEN);
+            memcpy(buf, cfg.dst_mac, MACADDRLEN);
             memcpy(buf + MACADDRLEN, cfg.src_mac, MACADDRLEN);
             memcpy(buf + 2 * MACADDRLEN, pkt_data + 2 * MACADDRLEN, header->len - 2 * MACADDRLEN);
             if (handle == NULL || pcap_sendpacket(handle, buf, header->len) != 0)
