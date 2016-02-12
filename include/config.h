@@ -53,6 +53,7 @@ struct pm_cfg
     int         src_count;              /* number of source ports           */
     char        src_mac[MACADDRLEN];    /* source MAC address               */
     char        dst_mac[MACADDRLEN];    /* destination MAC address          */
+    time_t      init_time;              /* used to check for timeouts       */
     int         packet_count;           /* number of packets processed      */
 };
 

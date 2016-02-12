@@ -114,9 +114,6 @@ typedef struct
 
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
-//options:
-time_t              tLastInit = 0;
-
 #ifdef  _ENABLE_THREADS
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 #endif
@@ -332,7 +329,7 @@ int getRemoteARP(unsigned int targetIP, const char *device, char *mac)
 
 int initSendHandle(pcap_t *handle, int *sock)
 {
-    time(&tLastInit);
+    time(&cfg.init_time);
 
     if (cfg.flags & PM_DST_IF)
     {
@@ -405,7 +402,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data,
             //error detected
             long nowTime;
             time(&nowTime);
-            if (nowTime - tLastInit > ERRTIMEOUT && header->len < 1500)
+            if (nowTime - cfg.init_time > ERRTIMEOUT && header->len < 1500)
             {
                 if (cfg.flags & PM_DEBUG)
                 {
@@ -435,7 +432,7 @@ void packet_handler_ex(const struct pcap_pkthdr* header, const u_char* pkt_data,
                 //error detected
                 long nowTime;
                 time(&nowTime);
-                if (nowTime - tLastInit > ERRTIMEOUT && header->len < 1500)
+                if (nowTime - cfg.init_time > ERRTIMEOUT && header->len < 1500)
                 {
                     if (cfg.flags & PM_DEBUG)
                     {
