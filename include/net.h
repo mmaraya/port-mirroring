@@ -32,6 +32,15 @@
 #define ARP_WAIT_TIME   500                 /* ARP response wait time (ms)  */
 #define ARP_ETH_PADDING 18                  /* ARP ethernet padding         */
 
+// TaZMen Sniffer Protol (TZSP) Header
+typedef struct
+{
+    unsigned char   ver;
+    unsigned char   type;
+    unsigned short  proto;
+    unsigned char   tagend;
+} TZSP_HEAD;
+
 int getInterfaceMac(const char *device, char *mac);
 int getInterfaceIP(const char *device, unsigned int *ip);
 int nlmsg_ok(const struct nlmsghdr *nlh, ssize_t len);

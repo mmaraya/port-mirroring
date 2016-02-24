@@ -58,14 +58,6 @@
 
 typedef struct
 {
-    unsigned char ver;
-    unsigned char type;
-    unsigned short proto;
-    unsigned char tagend;
-}TZSP_HEAD;
-
-typedef struct
-{
     unsigned char h_lenver;
     unsigned char tos;
     unsigned short total_len;
