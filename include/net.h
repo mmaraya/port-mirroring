@@ -41,6 +41,21 @@ typedef struct
     unsigned char   tagend;
 } TZSP_HEAD;
 
+// Internet Protocol Header
+typedef struct
+{
+    unsigned char   h_lenver;
+    unsigned char   tos;
+    unsigned short  total_len;
+    unsigned short  ident;
+    unsigned short  frag_and_flags;
+    unsigned char   ttl;
+    unsigned char   proto;
+    unsigned short  checksum;
+    unsigned int    sourceIP;
+    unsigned int    destIP;
+} IP_HEADER;
+
 int getInterfaceMac(const char *device, char *mac);
 int getInterfaceIP(const char *device, unsigned int *ip);
 int nlmsg_ok(const struct nlmsghdr *nlh, ssize_t len);

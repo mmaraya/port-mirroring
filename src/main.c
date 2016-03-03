@@ -58,20 +58,6 @@
 
 typedef struct
 {
-    unsigned char h_lenver;
-    unsigned char tos;
-    unsigned short total_len;
-    unsigned short ident;
-    unsigned short frag_and_flags;
-    unsigned char ttl;
-    unsigned char proto;
-    unsigned short checksum;
-    unsigned int sourceIP;
-    unsigned int destIP;
-}IP_HEADER;
-
-typedef struct
-{
     unsigned short uh_sport;
     unsigned short uh_dport;
     unsigned short uh_len;
