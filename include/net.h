@@ -56,6 +56,15 @@ typedef struct
     unsigned int    destIP;
 } IP_HEADER;
 
+// User Datagram Protocl Header
+typedef struct
+{
+    unsigned short uh_sport;
+    unsigned short uh_dport;
+    unsigned short uh_len;
+    unsigned short uh_sum;
+} UDP_HEADER;
+
 int getInterfaceMac(const char *device, char *mac);
 int getInterfaceIP(const char *device, unsigned int *ip);
 int nlmsg_ok(const struct nlmsghdr *nlh, ssize_t len);
