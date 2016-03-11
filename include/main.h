@@ -16,7 +16,6 @@
 #include "net.h"
 
 #define LOG_IDENT   "port-mirroring"    /* program name for syslog      */
-#define ETH_ALEN    6                   /* Octets in one ethernet addr  */
 #define ETH_P_802_3 0x0001              /* Dummy type for 802.3 frames  */
 #define ETH_P_IP    0x0800              /* Internet Protocol packet     */
 #define SRC_IF_MAX  4                   /* maxium number of interfaces  */

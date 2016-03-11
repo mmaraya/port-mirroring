@@ -26,6 +26,7 @@
 
 #define BUFSIZE         8192
 #define MACADDRLEN      6
+#define ETH_ALEN        6                   /* Octets in one ethernet addr  */
 #define ETH_P_ARP       0x0806              /* Address Resolution packet    */
 #define ARPOP_REQUEST   1                   /* ARP request                  */
 #define ARPOP_REPLY     2                   /* ARP reply                    */
@@ -40,6 +41,14 @@ typedef struct
     unsigned short  proto;
     unsigned char   tagend;
 } TZSP_HEAD;
+
+// Ethernet header
+typedef struct
+{
+    unsigned char h_dest[ETH_ALEN];   /* destination ethernet address   */
+    unsigned char h_source[ETH_ALEN]; /* source ethernet address        */
+    unsigned short h_proto;           /* packet type ID field   */
+} ETHHDR;
 
 // Internet Protocol Header
 typedef struct

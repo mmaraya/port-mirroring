@@ -58,13 +58,6 @@
 
 typedef struct
 {
-    unsigned char h_dest[ETH_ALEN];   /* destination eth addr	*/
-    unsigned char h_source[ETH_ALEN]; /* source ether addr	*/
-    unsigned short h_proto;           /* packet type ID field	*/
-}ETHHDR;
-
-typedef struct
-{
     unsigned short ar_hrd;      	/* format of hardware address	*/
     unsigned short ar_pro;      	/* format of protocol address	*/
     unsigned char ar_hln;       	/* length of hardware address	*/
