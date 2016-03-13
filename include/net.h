@@ -74,6 +74,20 @@ typedef struct
     unsigned short uh_sum;
 } UDP_HEADER;
 
+// Address Resolution Protocol Header
+typedef struct
+{
+    unsigned short ar_hrd;              /* format of hardware address   */
+    unsigned short ar_pro;              /* format of protocol address   */
+    unsigned char ar_hln;               /* length of hardware address   */
+    unsigned char ar_pln;               /* length of protocol address   */
+    unsigned short ar_op;               /* ARP opcode (command)         */
+    unsigned char ar_sha[ETH_ALEN];     /* sender hardware address      */
+    unsigned int ar_sip;                /* sender IP address            */
+    unsigned char ar_tha[ETH_ALEN];     /* target hardware address      */
+    unsigned int ar_tip;                /* target IP address            */
+} ARPHDR;
+
 int getInterfaceMac(const char *device, char *mac);
 int getInterfaceIP(const char *device, unsigned int *ip);
 int nlmsg_ok(const struct nlmsghdr *nlh, ssize_t len);
