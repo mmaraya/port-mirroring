@@ -56,12 +56,6 @@
 #include "config.h"
 #include "main.h"
 
-typedef struct
-{
-    ETHHDR ethhdr;
-    ARPHDR arphdr;
-}ARPPACKET;
-
 struct pm_cfg cfg;  /* program-wide settings, initialized in init() */
 
 #ifdef  _ENABLE_THREADS

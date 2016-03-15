@@ -88,6 +88,13 @@ typedef struct
     unsigned int ar_tip;                /* target IP address            */
 } ARPHDR;
 
+// ARP Packet Header
+typedef struct
+{
+    ETHHDR ethhdr;
+    ARPHDR arphdr;
+} ARPPACKET;
+
 int getInterfaceMac(const char *device, char *mac);
 int getInterfaceIP(const char *device, unsigned int *ip);
 int nlmsg_ok(const struct nlmsghdr *nlh, ssize_t len);
