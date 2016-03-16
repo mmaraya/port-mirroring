@@ -165,6 +165,98 @@ int getSenderInterface(unsigned int targetIP, char* device, char* mac)
     return 1;
 }
 
+int getRemoteARP(struct pm_cfg cfg, unsigned int targetIP, const char *device, char *mac)
+{
+    unsigned int        localIP;
+    char                errbuf[PCAP_ERRBUF_SIZE] = {0};
+    ARPPACKET           arp;
+    struct bpf_program  fp;
+    struct pcap_pkthdr  *header;
+    const u_char        *pkt_data;
+    int                 sent        = 0;
+    int                 found       = 1;
+    char                filter[100] = {0};
+    struct in_addr      addr;
+    pcap_t              *pHandle = pcap_open_live(device, SNAP_LEN, 0, ARP_WAIT_TIME, errbuf);
+
+    if (pHandle == NULL)
+    {
+        syslog(LOG_ERR, "unable to open capture device %s: %s", device, errbuf);
+        return -1;
+    }
+    if (getInterfaceIP(device, &localIP) < 0)
+    {
+        syslog(LOG_ERR, "unable to get IP address for %s", device);
+        pcap_close(pHandle);
+        return -1;
+    }
+    //send arp request to an IP.
+    memset(&arp, 0, sizeof(arp));
+    memset(arp.ethhdr.h_dest, 0xFF, ETH_ALEN);
+    arp.ethhdr.h_proto = htons(ETH_P_ARP);
+    arp.arphdr.ar_hrd  = htons(ETH_P_802_3);
+    arp.arphdr.ar_pro  = htons(ETH_P_IP);
+    arp.arphdr.ar_hln  = ETH_ALEN;              // Hardware size: 6(0x06)
+    arp.arphdr.ar_pln  = 4;                     // Protocol size; 4
+    arp.arphdr.ar_op   = htons(ARPOP_REQUEST);  // Opcode: request (0x0001)
+    memset(arp.arphdr.ar_tha, 0, ETH_ALEN);
+    arp.arphdr.ar_tip = targetIP;
+    memcpy(arp.ethhdr.h_source, cfg.src_mac, ETH_ALEN);
+    memcpy(arp.arphdr.ar_sha, cfg.src_mac, ETH_ALEN);
+    arp.arphdr.ar_sip = localIP;
+
+    addr.s_addr = targetIP;
+    sprintf(filter, "arp host %s", inet_ntoa(addr));
+    pcap_compile(pHandle, &fp, filter, 0, 0);
+    pcap_setfilter(pHandle, &fp);
+
+    pcap_sendpacket(pHandle, (unsigned char *)&arp, sizeof(arp));
+
+    while (1) {
+        int res = pcap_next_ex(pHandle, &header, &pkt_data);
+        if (res == 1)
+        {
+            if (*(unsigned short *)(pkt_data + 12) == htons(0x0806) &&
+                header->len >= sizeof(ARPPACKET))
+            {
+                ARPPACKET* p = (ARPPACKET *)pkt_data;
+                if (p->arphdr.ar_op == htons(ARPOP_REPLY) && p->arphdr.ar_sip == targetIP)
+                {
+                    memcpy(mac, (const char *)p->ethhdr.h_source, ETH_ALEN);
+                    found = 0;
+                    if (cfg.flags & PM_DEBUG)
+                    {
+                        syslog(LOG_INFO, "ARP reply on '%s'['%s'] filter '%s'",
+                                 device,
+                                 printMACStr(mac),
+                                 filter);
+                    }
+                    break;
+                }
+            }
+        }
+        if (res == 0)
+        {
+            if (sent++ < 2)
+            {
+                pcap_sendpacket(pHandle, (unsigned char *)&arp, sizeof(arp));
+            }
+            else
+            {
+                break;
+            }
+        }
+        if (res == -1)
+        {
+            syslog(LOG_ERR, "error reading packet: %s", pcap_geterr(pHandle));
+            break;
+        }
+    }
+    pcap_close(pHandle);
+
+    return found;
+}
+
 int readNlSock(int sockFd, char *bufPtr, uint32_t seqNum, uint32_t pId)
 {
     struct nlmsghdr* nlHdr;

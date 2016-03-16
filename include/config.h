@@ -11,17 +11,21 @@
 #ifndef PORT_MIRRORING_UTIL_H_
 #define PORT_MIRRORING_UTIL_H_
 
+#include <errno.h>
+#include <net/if.h>
+#include <netinet/in.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <syslog.h>
 #include <linux/limits.h>
-#include "net.h"
 
 #define OPTION_MAX  254     /* max value for program options                */
 #define TIMEBUF     32      /* max timestamp length RFC3339                 */
 #define SRC_MAX     4       /* maxium number of source network interfaces   */
 #define PFE_MAX     80      /* maximum length of packet filter expression   */
+#define MACADDRLEN  6       /* length of a MAC address                      */
 
 // port-mirroring configuration bit flags
 #define PM_DAEMON   0x01    /* run as background process                    */
