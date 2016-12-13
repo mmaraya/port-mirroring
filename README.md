@@ -75,6 +75,18 @@ To compile the OpenWrt package, you will need the following:
    * ccache
    * libpcap-dev
 
+Build Instructions
+------------------
+
+1. Download [OpenWrt SDK](http://wiki.openwrt.org/doc/howto/obtain.firmware.sdk) and link/rename it openwrt-sdk
+2. Create the directory openwrt-sdk/package/port-mirroring/
+3. Create a link to port-mirroring/openwrt/Makefile in openwrt-sdk/package/port-mirroring/
+4. Run the following commands from your openwrt-sdk directory:
+   * rm dl/port-mirroring-1.4.2.tar.bz2
+   * make -j1 V=s package/port-mirroring/clean
+   * make -j1 V=s package/port-mirroring/compile
+5. If everything works, you should find your package in openwrt-sdk/bin/ar71xx/packages/base/
+
 License
 -------
 
