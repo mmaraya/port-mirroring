@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=port-mirroring
-PKG_VERSION:=1.4.2
+PKG_VERSION:=1.4.3
 PKG_RELEASE:=1
 PKG_MAINTAINER:=Mike Maraya <mike.maraya@gmail.com>
 PKG_LICENSE:=BSD-2-Clause
