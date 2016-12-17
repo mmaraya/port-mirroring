@@ -11,7 +11,7 @@ port-mirroring runs on all hardware platforms [supported](http://wiki.openwrt.or
 Download
 --------
 port-mirroring v1.4.3 has been tested against OpenWrt Chaos Calmer 15.05 and is available for the the following platform(s):
-* Atheros AR71xx/AR724x/AR913x/AR9344 or "ar71xx" platform: [port-mirroring_1.4.3_ar71xx.ipk] (https://github.com/mmaraya/port-mirroring/releases/download/v1.4.3/port-mirroring_1.4.3_ar71xx.ipk). 
+* Atheros AR71xx/AR724x/AR913x/AR9344 or "ar71xx" platform: [port-mirroring_1.4.3-1_ar71xx.ipk] (https://github.com/mmaraya/port-mirroring/releases/download/1.4.3/port-mirroring_1.4.3-1_ar71xx.ipk). 
 
 If you need binaries for your router architecture, please submit a [request](https://github.com/mmaraya/port-mirroring/issues). 
 
@@ -33,8 +33,8 @@ root@OpenWrt:~# opkg install ca-certificates
 From your OpenWrt terminal, run the following commands to install the precompiled package.
 ```
 root@OpenWrt:~# cd /tmp
-root@OpenWrt:~# wget https://github.com/mmaraya/port-mirroring/releases/download/v1.4.3/port-mirroring_1.4.3_ar71xx.ipk
-root@OpenWrt:~# opkg install port-mirroring_1.4.3_ar71xx.ipk
+root@OpenWrt:~# wget https://github.com/mmaraya/port-mirroring/releases/download/1.4.3/port-mirroring_1.4.3-1_ar71xx.ipk
+root@OpenWrt:~# opkg install port-mirroring_1.4.3-1_ar71xx.ipk
 ```
 The last command will install the package and start it as a background process using the default configuration file. The default settings will probably not work on your environment, so the program should exit right after starting. Modify the `/etc/config/port-mirroring` file to suit your environment.
 ```
