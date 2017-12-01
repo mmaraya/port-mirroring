@@ -11,8 +11,8 @@ port-mirroring runs on all hardware platforms [supported](http://wiki.openwrt.or
 Download
 --------
 port-mirroring v1.4.3 has been tested against OpenWrt Chaos Calmer 15.05 and is available for the the following platform(s):
-* Atheros AR71xx/AR724x/AR913x/AR9344 or "ar71xx" platform: [port-mirroring_1.4.3-1_ar71xx.ipk] (https://github.com/mmaraya/port-mirroring/releases/download/v1.4.3/port-mirroring_1.4.3-1_ar71xx.ipk). 
-* x86 platform: [port-mirroring_1.4.3-1_x86.ipk] (https://github.com/mmaraya/port-mirroring/releases/download/v1.4.3/port-mirroring_1.4.3-1_x86.ipki).
+* Atheros AR71xx/AR724x/AR913x/AR9344 or "ar71xx" platform: [port-mirroring_1.4.3-1_ar71xx.ipk](https://github.com/mmaraya/port-mirroring/releases/download/v1.4.3/port-mirroring_1.4.3-1_ar71xx.ipk). 
+* x86 platform: [port-mirroring_1.4.3-1_x86.ipk](https://github.com/mmaraya/port-mirroring/releases/download/v1.4.3/port-mirroring_1.4.3-1_x86.ipki).
 
 If you need binaries for your router architecture, please submit a [request](https://github.com/mmaraya/port-mirroring/issues). 
 
