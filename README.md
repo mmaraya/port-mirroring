@@ -80,13 +80,20 @@ Build Instructions
 ------------------
 
 1. Download [OpenWrt SDK](http://wiki.openwrt.org/doc/howto/obtain.firmware.sdk) and link/rename it openwrt-sdk
+2. Install libpcap
+   ```
+   ./scripts/feeds update -a
+   ./scripts/feeds install libpcap
+   
 2. Create the directory openwrt-sdk/package/port-mirroring/
 3. Create a link to port-mirroring/openwrt/Makefile in openwrt-sdk/package/port-mirroring/
 4. Customize port-mirroring/openwrt/Makefile to your build environment
 5. Run the following commands from your openwrt-sdk directory:
-   * rm dl/port-mirroring-1.4.3.tar.bz2
-   * make -j1 V=s package/port-mirroring/clean
-   * make -j1 V=s package/port-mirroring/compile
+   ```
+   rm dl/port-mirroring-1.4.3.tar.bz2
+   make -j1 V=s package/port-mirroring/clean
+   make -j1 V=s package/port-mirroring/compile
+   ```   ```
 6. If everything works, you should find your package in openwrt-sdk/bin/ar71xx/packages/base/
 
 License
