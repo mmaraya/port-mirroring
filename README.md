@@ -72,14 +72,14 @@ Build Prerequisites
 
 To compile the OpenWrt package, you will need the following:
 
-   * [OpenWrt SDK](http://wiki.openwrt.org/doc/howto/obtain.firmware.sdk)
-   * ccache
+   * [OpenWrt SDK](https://openwrt.org/docs/guide-developer/using_the_sdk)
    * libpcap-dev
 
 Build Instructions
 ------------------
 
-1. Download [OpenWrt SDK](http://wiki.openwrt.org/doc/howto/obtain.firmware.sdk) and link/rename it openwrt-sdk
+1. Download [OpenWrt SDK](https://openwrt.org/docs/guide-developer/using_the_sdk#obtain_the_sdk) 
+and link/rename it openwrt-sdk
 2. Install libpcap
    ```sh
    ./scripts/feeds update -a
@@ -109,5 +109,10 @@ Please submit questions, comments, bugs, enhancement requests at https://github.
 Disclaimer
 ----------
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
