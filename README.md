@@ -94,7 +94,7 @@ and link/rename it openwrt-sdk
    make -j1 V=s package/port-mirroring/clean
    make -j1 V=s package/port-mirroring/compile
    ```
-6. If everything works, you should find your package in openwrt-sdk/bin/ar71xx/packages/base/
+6. If everything works, you should find your package in openwrt-sdk/bin/packages/mips_24kc/base/
 
 License
 -------
@@ -104,7 +104,8 @@ Please see the file named [LICENSE](https://github.com/mmaraya/port-mirroring/bl
 Issues
 ------
 
-Please submit questions, comments, bugs, enhancement requests at https://github.com/mmaraya/port-mirroring/issues.
+Please submit questions, comments, bugs, enhancement requests at 
+https://github.com/mmaraya/port-mirroring/issues.
 
 Disclaimer
 ----------
