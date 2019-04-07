@@ -10,9 +10,9 @@ port-mirroring runs on all hardware platforms [supported](http://wiki.openwrt.or
 
 Download
 --------
-port-mirroring v1.4.3 has been tested against OpenWrt Chaos Calmer 15.05 and is available for the the following platform(s):
-* Atheros AR71xx/AR724x/AR913x/AR9344 or "ar71xx" platform: [port-mirroring_1.4.3-1_ar71xx.ipk](https://github.com/mmaraya/port-mirroring/releases/download/v1.4.3/port-mirroring_1.4.3-1_ar71xx.ipk). 
-* x86 platform: [port-mirroring_1.4.3-1_x86.ipk](https://github.com/mmaraya/port-mirroring/releases/download/v1.4.3/port-mirroring_1.4.3-1_x86.ipki).
+port-mirroring v1.4.4 has been compiled but not tested against OpenWrt 18.06.2 and is available for the the following platform(s):
+* Atheros AR71xx/AR724x/AR913x/AR9344 or "ar71xx" platform: [port-mirroring_1.4.4-1_mips_24kc.ipk](https://github.com/mmaraya/port-mirroring/releases/download/v1.4.4/port-mirroring_1.4.4-1_mips_24kc.ipk). 
+* x86 platform: [port-mirroring_1.4.4-1_i386_pentium4.ipk](https://github.com/mmaraya/port-mirroring/releases/download/v1.4.4/port-mirroring_1.4.4-1_i386_pentium4.ipk).
 
 If you need binaries for your router architecture, please submit a [request](https://github.com/mmaraya/port-mirroring/issues). 
 
@@ -34,8 +34,8 @@ root@OpenWrt:~# opkg install ca-certificates
 From your OpenWrt terminal, run the following commands to install the precompiled package.
 ```
 root@OpenWrt:~# cd /tmp
-root@OpenWrt:~# wget https://github.com/mmaraya/port-mirroring/releases/download/v1.4.3/port-mirroring_1.4.3-1_ar71xx.ipk
-root@OpenWrt:~# opkg install port-mirroring_1.4.3-1_ar71xx.ipk
+root@OpenWrt:~# wget https://github.com/mmaraya/port-mirroring/releases/download/v1.4.4/port-mirroring_1.4.4-1_mips_24kc.ipk
+root@OpenWrt:~# opkg install port-mirroring_1.4.4-1_mips_24kc.ipk
 ```
 The last command will install the package and start it as a background process using the default configuration file. The default settings will probably not work on your environment, so the program should exit right after starting. Modify the `/etc/config/port-mirroring` file to suit your environment.
 ```
@@ -90,7 +90,7 @@ and link/rename it openwrt-sdk
 4. Customize port-mirroring/openwrt/Makefile to your build environment
 5. Run the following commands from your openwrt-sdk directory:
    ```sh
-   rm dl/port-mirroring-1.4.3.tar.bz2
+   rm dl/port-mirroring-1.4.4.tar.bz2
    make -j1 V=s package/port-mirroring/clean
    make -j1 V=s package/port-mirroring/compile
    ```
