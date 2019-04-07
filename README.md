@@ -10,8 +10,8 @@ port-mirroring runs on all hardware platforms [supported](http://wiki.openwrt.or
 
 Download
 --------
-port-mirroring v1.4.4 has been compiled but not tested against OpenWrt 18.06.2 and is available for the the following platform(s):
-* Atheros AR71xx/AR724x/AR913x/AR9344 or "ar71xx" platform: [port-mirroring_1.4.4-1_mips_24kc.ipk](https://github.com/mmaraya/port-mirroring/releases/download/v1.4.4/port-mirroring_1.4.4-1_mips_24kc.ipk). 
+port-mirroring v1.4.4 has been compiled (but not tested) against OpenWrt 18.06.2 and is available for the the following platform(s):
+* Atheros AR7xxx and AR9xxx platform: [port-mirroring_1.4.4-1_mips_24kc.ipk](https://github.com/mmaraya/port-mirroring/releases/download/v1.4.4/port-mirroring_1.4.4-1_mips_24kc.ipk). 
 * x86 platform: [port-mirroring_1.4.4-1_i386_pentium4.ipk](https://github.com/mmaraya/port-mirroring/releases/download/v1.4.4/port-mirroring_1.4.4-1_i386_pentium4.ipk).
 
 If you need binaries for your router architecture, please submit a [request](https://github.com/mmaraya/port-mirroring/issues). 
@@ -19,7 +19,9 @@ If you need binaries for your router architecture, please submit a [request](htt
 
 Usage
 -----
-These instructions will only work on routers that use the Atheros AR71xx/AR724x/913x or "ar71xx" platform. If your router does not use the ar71xx platform, please submit a [request](https://github.com/mmaraya/port-mirroring/issues).
+These instructions will only work on routers that use the Atheros AR7xxx or 
+AR9xxx platforms. If your router uses a different platform, please submit a
+[request](https://github.com/mmaraya/port-mirroring/issues).
 
 The default wget in OpenWrt is provided by Busybox and does not support SSL. The following commands from the OpenWrt terminal will install the full wget with SSL support and root certificates:
 ```
