@@ -1,5 +1,5 @@
-# 
-# Copyright (c) 2015 OpenWrt.org
+#
+# Copyright (c) 2015-2019 OpenWrt.org
 #
 # This is free software, licensed under the BSD 2-Clause License.
 #
@@ -9,15 +9,16 @@ include $(TOPDIR)/rules.mk
 PKG_NAME:=port-mirroring
 PKG_VERSION:=1.4.4
 PKG_RELEASE:=1
+
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/mmaraya/port-mirroring/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=9fb259d24cee4fe1bed1a51c49e52a8eb05b692ba1b5debb75fdf54957cc8ed1
+
 PKG_MAINTAINER:=Mike Maraya <mike.maraya@gmail.com>
 PKG_LICENSE:=BSD-2-Clause
 PKG_LICENSE_FILES:=LICENSE
-PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
-PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_URL:=git://github.com/mmaraya/port-mirroring.git
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=54f9605776d841ab231a53ceb6c2096687058c08
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+
+PKG_FIXUP:=autoreconf
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -25,7 +26,7 @@ define Package/port-mirroring
 	SECTION:=net
 	CATEGORY:=Network
 	DEPENDS:=+libpcap +libpthread
-	TITLE:=Copy network packets with optional support for TaZmen Sniffer Protocol (TZSP) 
+	TITLE:=Copy network packets with optional support for TaZmen Sniffer Protocol (TZSP)
 	URL:=https://github.com/mmaraya/port-mirroring
 	MENU:=1
 endef
