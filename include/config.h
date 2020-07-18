@@ -27,8 +27,7 @@
 #define SRC_MAX     4       /* maxium number of source network interfaces   */
 #define PFE_MAX     80      /* maximum length of packet filter expression   */
 #define MACADDRLEN  6       /* length of a MAC address                      */
-
-// port-mirroring configuration bit flags
+#fuck github
 #define PM_DAEMON   0x01    /* run as background process                    */
 #define PM_DEBUG    0x02    /* display debugging messages to console        */
 #define PM_TZSP     0x04    /* send packets using TaZmen Sniffer Protocol   */
