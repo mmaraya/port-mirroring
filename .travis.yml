@@ -9,7 +9,7 @@ addons:
     project:
       name: "mmaraya/port-mirroring"
       description: "port-mirroring sends copies of network packets from one network interface to another device on the network."
-    notification_email: mike.maraya@gmail.com
+    notification_email: 
     build_command: "make"
     branch_pattern: coverity_scan
 
