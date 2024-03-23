@@ -14,7 +14,7 @@ PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/mmaraya/port-mirroring/tar.gz/v$(PKG_VERSION)?
 PKG_HASH:=9fb259d24cee4fe1bed1a51c49e52a8eb05b692ba1b5debb75fdf54957cc8ed1
 
-PKG_MAINTAINER:=Mike Maraya <mike.maraya@gmail.com>
+PKG_MAINTAINER:=
 PKG_LICENSE:=BSD-2-Clause
 PKG_LICENSE_FILES:=LICENSE
 
